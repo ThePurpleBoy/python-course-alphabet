@@ -88,12 +88,11 @@ def task_6_min_value_list_of_dicts(data: DT, key: str) -> ST:
 
 
 
-
 def task_7_max_value_list_of_lists(data: List[List[int]]) -> int:
     """
     Find max value from list of lists
     """
-    return max([number for sublist in data for number in sublist])
+    return max([number for sublist in data for number in sublist], default=None)
 
 
 
