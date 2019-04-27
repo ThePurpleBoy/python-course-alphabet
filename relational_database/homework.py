@@ -21,18 +21,18 @@ def task_1_add_new_record_to_db(con) -> None:
     """
     with con.cursor() as cur:
         cur.execute("""INSERT INTO Customers(CustomerName,
-                                          ContactName,
-                                          Address,
-                                          City,
-                                          PostalCode,
-                                          Country)
-                       VALUES ('Thomas',
-                               'David',
-                               'Some Address',
-                               'London',
-                               '774',
-                               'Singapore')
-                    """)
+                                             ContactName,
+                                             Address,
+                                             City,
+                                             PostalCode,
+                                             Country)
+                       VALUES (%s, %s, %s, %s, %s, %s)""", ('Thomas',
+                                                             'David',
+                                                             'Some Address',
+                                                             'London',
+                                                             '774',
+                                                             'Singapore'))
+
 
 
 def task_2_list_all_customers(cur) -> list:
@@ -62,8 +62,7 @@ def task_3_list_customers_in_germany(cur) -> list:
     """
     cur.execute("""SELECT * 
                    FROM Customers 
-                   WHERE Country = 'Germany'
-                """)
+                   WHERE Country = %s""", ('Germany',))
     return cur.fetchall()
 
 
@@ -78,9 +77,8 @@ def task_4_update_customer(con):
     """
     with con.cursor() as cur:
         cur.execute("""UPDATE Customers
-                       SET CustomerName = 'Johnny Depp'
-                       WHERE CustomerID = 1
-                    """)
+                       SET CustomerName = %s
+                       WHERE CustomerID = 1""", ('Johnny Depp',))
 
 
 def task_5_delete_the_last_customer(con) -> None:
@@ -208,8 +206,8 @@ def task_12_list_suppliers_from_specified_countries(cur):
                           City,
                           Country
                    FROM Suppliers
-                   WHERE Country IN ('USA', 'UK', 'Japan')
-                """)
+                   WHERE Country IN (%s, %s, %s)""", ('USA', 'UK', 'Japan'))
+
     return cur.fetchall()
 
 def task_13_list_products_from_sweden_suppliers(cur):
@@ -225,8 +223,7 @@ def task_13_list_products_from_sweden_suppliers(cur):
                    FROM Products
                    WHERE SupplierID IN (SELECT SupplierID
                                         FROM Suppliers
-                                        WHERE Country = 'Sweden')
-                """)
+                                        WHERE Country = %s)""", ('Sweden',))
     return cur.fetchall()
 
 
