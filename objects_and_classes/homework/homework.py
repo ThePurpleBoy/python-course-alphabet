@@ -46,17 +46,132 @@
 
     Колекціонерів можна порівнювати за ціною всіх їх автомобілів.
 """
+import random
+import uuid
 
+CARS_TYPES = ["SUV", "Truck", "Sedan", "Van", "Coupe", "Wagon", "Sports Car", "Diesel", "Crossover", "Luxury Car"]
+CARS_PRODUCER = ["BENTLEY", "BMW", "Bugatti", "Buick", "Chery", "Chevrolet", "Dodge", "Ford", "Lamborghini"]
 
-class Millionaire:
-    pass
+TOWNS = ["Amsterdam", "Kiev", "Prague", "Rome", "Paris", "London", "Berlin"]
 
 
 class Car:
-    pass
+
+    def __init__(self, number=uuid.uuid4()):
+        self.type = random.choice(CARS_TYPES)
+        self.producer = random.choice(CARS_PRODUCER)
+        self.price = round(random.uniform(10000, 500000), 2)
+        self.mileage = round(random.uniform(0, 100000), 2)
+        self.number = number.hex
+
+    def __eq__(self, other: Car):
+        return self.price == other.price
+
+    def __ne__(self, other: Car):
+        return self.price != other.price
+
+    def __lt__(self, other: Car):
+        return self.price < other.price
+
+    def __gt__(self, other: Car):
+        return self.price > other.price
+
+    def __le__(self, other: Car):
+        return self.price <= other.price
+
+    def __ge__(self, other: Car):
+        return self.price >= other.price
+
+    def __str__(self):
+        return f"{self.type}, {self.producer}, {self.price}, {self.mileage}, {self.number}"
+
+    def replace_number(self):
+        self.number = uuid.uuid4().hex
+
+
+
+
+
+
+
+
+
 
 
 class Garage:
-    pass
+
+    def __init__(self, cars=[], owner=None):
+        self.town = random.choice(TOWNS)
+        self.cars = cars
+        self.places = random.randint(3, 20)
+        self.owner = owner
+
+    def add(self, car: Car):
+        self.cars.append(car)
+        self.places -= 1
+
+    def remove(self, car: Car):
+        self.cars.remove(car)
+        self.places += 1
+
+    def hit_hat(self):
+        return sum(map(lambda car: car.price, self.cars))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Millionaire:
+
+    def __init__(self, name, garages=[], register_id=uuid.uuid4()):
+        self.name = name
+        self.register_id = register_id.hex
+        self.garages = garages
+
+    def garages_count(self):
+        return len(self.garages)
+
+    def add_garage(self, garage: Garage):
+        self.garages.append(garage)
+
+    def add_car(self, car: Car):
+
+
+
+    def cars_count(self):
+
+
+
+
+
+
+
 
 
