@@ -46,47 +46,46 @@
 
     Колекціонерів можна порівнювати за ціною всіх їх автомобілів.
 """
-import random
-import uuid
-
-CARS_TYPES = ["SUV", "Truck", "Sedan", "Van", "Coupe", "Wagon", "Sports Car", "Diesel", "Crossover", "Luxury Car"]
-CARS_PRODUCER = ["BENTLEY", "BMW", "Bugatti", "Buick", "Chery", "Chevrolet", "Dodge", "Ford", "Lamborghini"]
-
-TOWNS = ["Amsterdam", "Kiev", "Prague", "Rome", "Paris", "London", "Berlin"]
+from typing import List
+from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TOWNS
+from uuid import uuid4
 
 
 class Car:
 
-    def __init__(self, number=uuid.uuid4()):
-        self.type = random.choice(CARS_TYPES)
-        self.producer = random.choice(CARS_PRODUCER)
-        self.price = round(random.uniform(10000, 500000), 2)
-        self.mileage = round(random.uniform(0, 100000), 2)
-        self.number = number.hex
+    def __init__(self, producer, type, price: float, mileage: float):
+        if producer not in CARS_PRODUCER or type not in CARS_TYPES:
+            print("Please, enter valid values <producer> and <type>")
+        else:
+            self.producer = producer
+            self.type = type
+            self.price = float(price)
+            self.mileage = float(mileage)
+            self.number = uuid4().hex
 
-    def __eq__(self, other: Car):
+    def __eq__(self, other):
         return self.price == other.price
 
-    def __ne__(self, other: Car):
+    def __ne__(self, other):
         return self.price != other.price
 
-    def __lt__(self, other: Car):
+    def __lt__(self, other):
         return self.price < other.price
 
-    def __gt__(self, other: Car):
+    def __gt__(self, other):
         return self.price > other.price
 
-    def __le__(self, other: Car):
+    def __le__(self, other):
         return self.price <= other.price
 
-    def __ge__(self, other: Car):
+    def __ge__(self, other):
         return self.price >= other.price
 
     def __str__(self):
-        return f"{self.type}, {self.producer}, {self.price}, {self.mileage}, {self.number}"
+        return f"{self.producer} / {self.type}, Price:{self.price}, Mileage:{self.mileage}, Number:{self.number}"
 
     def replace_number(self):
-        self.number = uuid.uuid4().hex
+        self.number = uuid4().hex
 
 
 
@@ -100,25 +99,52 @@ class Car:
 
 class Garage:
 
-    def __init__(self, cars=[], owner=None):
-        self.town = random.choice(TOWNS)
-        self.cars = cars
-        self.places = random.randint(3, 20)
-        self.owner = owner
+    cars: List[Car]
 
-    def add(self, car: Car):
-        self.cars.append(car)
-        self.places -= 1
 
-    def remove(self, car: Car):
-        self.cars.remove(car)
-        self.places += 1
+    def __init__(self, town, places, cars=None, owner=None):
+        if town not in TOWNS:     # перевірка параметру <town>
+            print("Please, enter valid values <town>")
+        else:
+            self.town = town
+            self.cars = cars if cars is not None else []
+            self.places = places
+            self.owner = owner
 
-    def hit_hat(self):
+    def __str__(self):
+        return f"{self.town}, {self.places}, {self.cars}, {self.owner}"
+
+    def add(self, car: Car):   # додавання машини в гараж
+        if self.places <= len(self.cars):
+            print("Sorry, no room for a new car")
+        else:
+            self.cars.append([str(car)])
+
+    def remove(self, car_number):  # віднімання машини з гаражу; машина ідентифікується по унікальному номеру
+        for car in self.cars:
+            for number in car:
+                if car_number in number:
+                    self.cars.remove(car)
+
+
+
+
+    def hit_hat(self):    # сумарна вартість машин в гаражі
         return sum(map(lambda car: car.price, self.cars))
 
 
 
+first = Garage('London', 5)
+delcar = Car('Ford', 'Sedan', 11111, 111)
+first.add(delcar)
+first.add(Car('Ford', 'Sedan', 22222, 222))
+first.add(Car('Ford', 'Sedan', 33333, 333))
+
+print('add - ', first)
+first.remove(delcar.number)
+print('remove - ', first)
+
+print(first.hit_hat())
 
 
 
@@ -146,26 +172,32 @@ class Garage:
 
 
 
+#
+# class Millionaire:
+#
+#     def __init__(self, name, garages=[], register_id=uuid.uuid4()):
+#         self.name = str(name)
+#         self.register_id = register_id.hex
+#         self.garages = garages
+#
+#     def garages_count(self):
+#         return len(self.garages)
+#
+#     def cars_count(self):
+#         return len([car for garage in self.garages for car in garage])
+#
+#     def add_garage(self, garage: Garage):
+#         self.garages.append(garage)
+#
+#     def empty_garage(self):
+#         return
+#     def add_car(self, garage: Garage):
+#         if garage
 
 
-class Millionaire:
-
-    def __init__(self, name, garages=[], register_id=uuid.uuid4()):
-        self.name = name
-        self.register_id = register_id.hex
-        self.garages = garages
-
-    def garages_count(self):
-        return len(self.garages)
-
-    def add_garage(self, garage: Garage):
-        self.garages.append(garage)
-
-    def add_car(self, car: Car):
 
 
 
-    def cars_count(self):
 
 
 
