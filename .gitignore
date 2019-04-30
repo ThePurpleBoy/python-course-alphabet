@@ -7,4 +7,7 @@ __pycache__
 env
 venv
 virtualenv
+<<<<<<< HEAD
 venv_postgres/
+=======
+>>>>>>> 6c5d86d12b48c9fae0a46a2d7133a611235b4671

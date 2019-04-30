@@ -1,7 +1,11 @@
 import random
 from typing import List
 
+<<<<<<< HEAD
 from magic_methods.lifetime import Programmer
+=======
+from lection.magic_methods.lifetime import Programmer
+>>>>>>> 6c5d86d12b48c9fae0a46a2d7133a611235b4671
 
 
 class ITCompany:
@@ -36,7 +40,11 @@ if __name__ == "__main__":
     positions = ["trainee", "junior", "middle", "senior", "tech lead"]
 
     programmers = []
+<<<<<<< HEAD
     for _ in range(2):
+=======
+    for _ in range(5):
+>>>>>>> 6c5d86d12b48c9fae0a46a2d7133a611235b4671
         programmer = Programmer(
             name=random.choice(names),
             language=random.choice(languages),
@@ -45,11 +53,25 @@ if __name__ == "__main__":
         programmers.append(programmer)
 
     company = ITCompany(name="Ralabs", members=programmers, years=6)
+<<<<<<< HEAD
+=======
+    
+    default_list = [1, 2, 3, 4, 5, 6]
+    for i in default_list:
+        print(i)
+    # Lets see what we have in our company now
+    for member in company:
+        print(member)
+>>>>>>> 6c5d86d12b48c9fae0a46a2d7133a611235b4671
 
     # Lets see what we have in our company now
     for p in company:
         print(p)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6c5d86d12b48c9fae0a46a2d7133a611235b4671
     # We should find this programmer in our company
     programmer = random.choice(programmers)
     print(f"Do we have this programmer {programmer} in company {company}? -{programmer in company}")
@@ -57,4 +79,7 @@ if __name__ == "__main__":
     # And this not
     batman = Programmer(name="Batman", position=["Team Lead"], language="Fists")
     print(f"Do we have this programmer {batman} in company {company}? -{batman in company}")
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6c5d86d12b48c9fae0a46a2d7133a611235b4671
