@@ -103,18 +103,6 @@ class Garage:
     def __repr__(self):
         return f"< {self.town}, {self.places}, {self.cars} >"
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.current < len(self.cars):
-            res = self.cars[self.current]
-            self.current += 1
-            return res
-        else:
-            self.current = 0
-            raise StopIteration
-
     def add(self, car: Car):
         if self.places <= len(self.cars):
             print("Sorry, no room for a new car")
