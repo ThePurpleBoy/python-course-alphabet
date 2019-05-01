@@ -124,7 +124,6 @@ class Cesar:
 
     def __init__(self, name: str, garages=None):
         self.name = name
-        # self.garages = garages if garages is not None else []
         self.register_id = uuid4().hex
         if garages is not None:
             self.garages = garages
