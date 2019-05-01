@@ -94,7 +94,6 @@ class Garage:
             self.cars = cars if cars is not None else []
             self.places = places
             self.owner = owner
-            self.current = 0
             self.free_places = self.places - len(self.cars)
 
     def __str__(self):
@@ -104,7 +103,7 @@ class Garage:
         return f"< {self.town}, {self.places}, {self.cars} >"
 
     def add(self, car: Car):
-        if self.places <= len(self.cars):
+        if self.free_places == 0:
             print("Sorry, no room for a new car")
         else:
             self.cars.append(car)
@@ -120,12 +119,19 @@ class Garage:
 
 
 class Cesar:
+
     garages = List[Garage]
 
     def __init__(self, name: str, garages=None):
         self.name = name
-        self.garages = garages if garages is not None else []
+        # self.garages = garages if garages is not None else []
         self.register_id = uuid4().hex
+        if garages is not None:
+            self.garages = garages
+            for garage in garages:
+                garage.owner = self.register_id
+        else:
+            self.garages = []
 
     def __str__(self):
         return f'{self.name}: {self.garages}'
@@ -153,7 +159,7 @@ class Cesar:
 
     def add_garage(self, garage: Garage):
         if garage.owner is not None:
-            print(f'This garage is the property of the collector - {self.name}')
+            print(f'This garage is the property of the other collector')
         else:
             self.garages.append(garage)
             garage.owner = self.register_id
@@ -184,12 +190,6 @@ class Cesar:
 
     def hit_hat(self):
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
-
-
-
-
-
-
 
 
 
