@@ -41,15 +41,16 @@ from uuid import uuid4
 
 class Car:
 
-    def __init__(self, producer, type, price: float, mileage: float):
-        if producer not in CARS_PRODUCER or type not in CARS_TYPES:
+    def __init__(self, producer, car_type, price: float, mileage: float):
+        if producer not in CARS_PRODUCER or car_type not in CARS_TYPES:
             print("Please, enter valid values <producer> and <type>")
         else:
             self.producer = producer
-            self.type = type
+            self.car_type = car_type
             self.price = float(price)
             self.mileage = float(mileage)
             self.number = uuid4().hex
+            self.usability = True
 
     def __eq__(self, other):
         return self.price == other.price
@@ -70,10 +71,10 @@ class Car:
         return self.price >= other.price
 
     def __str__(self):
-        return f"{self.producer} - {self.type}, Price:{self.price}, Mileage:{self.mileage}, Number:{self.number}"
+        return f"{self.producer} - {self.car_type}, Price:{self.price}, Mileage:{self.mileage}, Number:{self.number}"
 
     def __repr__(self):
-        return f"< {self.producer} / {self.type} / {self.price} / {self.mileage} / {self.number} >"
+        return f"< {self.producer} / {self.car_type} / {self.price} / {self.mileage} / {self.number} >"
 
     def replace_number(self):
         self.number = uuid4().hex
@@ -95,6 +96,12 @@ class Garage:
             self.places = places
             self.owner = owner
             self.free_places = self.places - len(self.cars)
+            if cars is not None:
+                self.cars = []
+                for car in cars:
+                    if car not in self.cars:
+                        self.cars.append(car)
+                        car.usability = False
 
     def __str__(self):
         return f"{self.town}, {self.places}, {self.cars}, {self.owner}"
@@ -105,11 +112,15 @@ class Garage:
     def add(self, car: Car):
         if self.free_places == 0:
             print("Sorry, no room for a new car")
+        elif not car.usability:
+            print("This car is already in use")
         else:
             self.cars.append(car)
+            car.usability = False
 
     def remove(self, car: Car):
         self.cars.remove(car)
+        car.usability = True
 
     def hit_hat(self):
         return sum(map(lambda car: car.price, self.cars))
@@ -125,12 +136,13 @@ class Cesar:
     def __init__(self, name: str, garages=None):
         self.name = name
         self.register_id = uuid4().hex
+        self.garages = garages if garages is not None else []
         if garages is not None:
-            self.garages = garages
-            for garage in garages:
-                garage.owner = self.register_id
-        else:
             self.garages = []
+            for garage in garages:
+                if garage not in self.garages:
+                    self.garages.append(garage)
+                    garage.owner = self.register_id
 
     def __str__(self):
         return f'{self.name}: {self.garages}'
@@ -157,20 +169,20 @@ class Cesar:
         return self.hit_hat() >= other.hit_hat()
 
     def add_garage(self, garage: Garage):
-        if garage.owner is not None:
+        if not garage.owner:
             print(f'This garage is the property of the other collector')
         else:
             self.garages.append(garage)
             garage.owner = self.register_id
 
     def most_empty(self):
-        most_empty = self.garages[0]
+        empty_gar = self.garages[0]
         for i in range(1, len(self.garages)):
-            if self.garages[i].free_places > most_empty.free_places:
-                most_empty = self.garages[i]
-        if most_empty.free_places == 0:
+            if self.garages[i].free_places > empty_gar.free_places:
+                empty_gar = self.garages[i]
+        if empty_gar.free_places == 0:
             return None
-        return most_empty
+        return empty_gar
 
     def add_car(self, car: Car, garage: Garage = None):
         if garage is not None:
@@ -179,7 +191,10 @@ class Cesar:
             else:
                 print(f'Sorry, {self.name} does not have this garage')
         else:
-            most_empty(self).add(car)
+            if most_empty() == None:
+                print("There are no free places in any garage")
+            else:
+                most_empty().add(car)
 
     def garages_count(self):
         return len(self.garages)
