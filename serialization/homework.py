@@ -189,19 +189,6 @@ class Garage:
             return json.load(file, object_hook=Garage.json_hook)
 
 
-car1 = Car('Ford', 'Sedan', 222, 11)
-car2 = Car('Chery', 'Sedan', 333, 11)
-gar1 = Garage('London', 5, [car1, car2])
-
-print(gar1)
-# sergar = gar1.json_serialize_to_string()
-# print(sergar)
-gar1.json_serialize_to_file('test.json')
-desgar = Garage.json_deserialize_from_file('test.json')
-print(desgar)
-
-
-
 class Cesar:
 
     garages = List[Garage]
@@ -278,10 +265,56 @@ class Cesar:
     def hit_hat(self):
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
 
+    @staticmethod
+    def json_default(obj):  # encoder
+        garages = json.dumps(obj.garages, default=Garage.json_default)
+        data = {'name': obj.name,
+                'garages': garages,
+                'register_id': obj.register_id}
+        return data
+
+    @classmethod
+    def json_hook(cls, data):  # decoder
+        name = data['name']
+        garages = json.loads(data['garages'], object_hook=Garage.json_hook)
+        cesar = Cesar(name=name,
+                      garages=garages)
+        cesar.register_id = data.get('register_id')
+        return cesar
+
+    def json_serialize_to_string(self):
+        return json.dumps(self, default=Cesar.json_default, indent=4)
+
+    def json_serialize_to_file(self, json_file):
+        with open(json_file, 'w') as file:
+            json.dump(self, file, default=Cesar.json_default, indent=4)
+
+    @staticmethod
+    def json_deserialize_from_string(obj):
+        return json.loads(obj, object_hook=Cesar.json_hook)
+
+    @staticmethod
+    def json_deserialize_from_file(json_file):
+        with open(json_file, 'r') as file:
+            return json.load(file, object_hook=Cesar.json_hook)
 
 
-# car1 = Car('Ford', 'Sedan', 111, 11)
-# print(car1)
-# car1.json_serialize_to_file('test.json')
-# des_car1 = Car.json_deserialize_from_file('test.json')
-# print(des_car1)
+# car1 = Car('Ford', 'Sedan', 11, 11)
+# car2 = Car('Chery', 'Sedan', 22, 22)
+# car3 = Car('Bugatti', 'Coupe', 33, 33)
+# car4 = Car('Dodge', 'Coupe', 44, 44)
+# gar1 = Garage('London', 5, [car1, car2])
+# gar2 = Garage('Kiev', 10, [car3, car4])
+# cesar = Cesar('David', [gar1, gar2])
+#
+# print(cesar)
+# print('\n', '~'*150)
+# ser_cesar = cesar.json_serialize_to_string()
+# des_cesar_from_str = Cesar.json_deserialize_from_string(ser_cesar)
+# print(des_cesar_from_str)
+# print('\n', '~'*150)
+# Cesar.json_serialize_to_file(cesar, 'test.json')
+# des_cesar_from_file = Cesar.json_deserialize_from_file('test.json')
+# print(des_cesar_from_file)
+# print('\n', '~'*150)
+# print(cesar == des_cesar_from_str == des_cesar_from_file)
