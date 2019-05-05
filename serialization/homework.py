@@ -106,6 +106,21 @@ class Car:
         with open(json_file, 'r') as file:
             return json.load(file, object_hook=Car.json_hook)
 
+    def pickle_serialize_to_string(self):
+        return pickle.dumps(self)
+
+    def pickle_serialize_to_file(self, file_name):
+        with open(file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def pickle_deserialize_from_string(obj):
+        return pickle.loads(obj)
+
+    @staticmethod
+    def pickle_deserialize_from_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
 
 class Garage:
 
@@ -187,6 +202,22 @@ class Garage:
     def json_deserialize_from_file(json_file):
         with open(json_file, 'r') as file:
             return json.load(file, object_hook=Garage.json_hook)
+
+    def pickle_serialize_to_string(self):
+        return pickle.dumps(self)
+
+    def pickle_serialize_to_file(self, file_name):
+        with open(file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def pickle_deserialize_from_string(obj):
+        return pickle.loads(obj)
+
+    @staticmethod
+    def pickle_deserialize_from_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
 
 
 class Cesar:
@@ -298,15 +329,44 @@ class Cesar:
         with open(json_file, 'r') as file:
             return json.load(file, object_hook=Cesar.json_hook)
 
+    def pickle_serialize_to_string(self):
+        return pickle.dumps(self)
 
-# car1 = Car('Ford', 'Sedan', 11, 11)
-# car2 = Car('Chery', 'Sedan', 22, 22)
-# car3 = Car('Bugatti', 'Coupe', 33, 33)
-# car4 = Car('Dodge', 'Coupe', 44, 44)
-# gar1 = Garage('London', 5, [car1, car2])
-# gar2 = Garage('Kiev', 10, [car3, car4])
-# cesar = Cesar('David', [gar1, gar2])
-#
+    def pickle_serialize_to_file(self, file_name):
+        with open(file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def pickle_deserialize_from_string(obj):
+        return pickle.loads(obj)
+
+    @staticmethod
+    def pickle_deserialize_from_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+
+
+
+
+
+
+
+
+
+
+
+
+car1 = Car('Ford', 'Sedan', 11, 11)
+car2 = Car('Chery', 'Sedan', 22, 22)
+car3 = Car('Bugatti', 'Coupe', 33, 33)
+car4 = Car('Dodge', 'Coupe', 44, 44)
+
+gar1 = Garage('London', 5, [car1, car2])
+gar2 = Garage('Kiev', 10, [car3, car4])
+
+cesar = Cesar('David', [gar1, gar2])
+
 # print(cesar)
 # print('\n', '~'*150)
 # ser_cesar = cesar.json_serialize_to_string()
