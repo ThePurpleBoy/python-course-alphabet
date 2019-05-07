@@ -54,7 +54,7 @@ class Car:
         self.number = uuid4().hex
         self.available = True
         self.garage = None
-        self.cesar = None
+        self.owner = None
 
     def __eq__(self, other):
         return self.price == other.price
@@ -84,33 +84,30 @@ class Car:
         self.number = uuid4().hex
 
 
-car = Car('Ford', 'Sedan', 111, 11)
-print(car)
-
-
-
 class Garage:
 
     cars: List[Car]
 
-    def __init__(self, town, places: int, cars=None, owner=None):
+    def __init__(self, town, places: int, cars=None):
         if town not in TOWNS:
             raise ValueError(f'Town: <{town}> is not available. Select a town from the following list {TOWNS}')
         if places <= 0:
             raise ValueError(f'Places should be a positive number')
+        if len(cars) > places:
+            raise ValueError(f'There is not enough space for all cars in the garage. Free places = {places}, Cars = {len(cars)}')
         if cars is None:
             self.cars = []
         else:
-            self.cars = cars
             for car in cars:
                 if not car.available:
                     raise ValueError(f'Car: {car} not available')
                 car.garage = self
                 car.available = False
+            self.cars = cars
 
         self.town = town
         self.places = places
-        self.owner = owner
+        self.owner = None
         self.free_places = self.places - len(self.cars)
         self.available = True
 
@@ -122,22 +119,22 @@ class Garage:
 
     def add(self, car: Car):
         if self.free_places == 0:
-            print("Sorry, no room for a new car")
+            raise ValueError("Sorry, no room for a new car")
         elif not car.available:
-            print(f"This car {} is part of another garage")
+            raise ValueError(f"This car {car} is part of another garage")
         else:
             self.cars.append(car)
-            car.usability = False
+            car.available = False
 
     def remove(self, car: Car):
-        self.cars.remove(car)
-        car.usability = True
+        if car not in self.cars:
+            raise ValueError(f"The car: {car} is not in this garage")
+        else:
+            self.cars.remove(car)
+            car.available = True
 
     def hit_hat(self):
         return sum(map(lambda car: car.price, self.cars))
-
-
-
 
 
 class Cesar:
@@ -147,19 +144,23 @@ class Cesar:
     def __init__(self, name: str, garages=None):
         self.name = name
         self.register_id = uuid4().hex
-        self.garages = garages if garages is not None else []
-        if garages is not None:
+        if garages is None:
             self.garages = []
+        else:
             for garage in garages:
-                if garage not in self.garages:
-                    self.garages.append(garage)
-                    garage.owner = self.register_id
+                if garage.owner is not None:
+                    raise ValueError(f'This garage: {garage} is the property of another collector (id = {garage.owner})')
+                garage.owner = self.register_id
+                for car in garage.cars:
+                    car.owner = self.register_id
+                    car.available = False
+            self.garages = garages
 
     def __str__(self):
-        return f'{self.name}: {self.garages}'
+        return f'{self.name}: {self.garages}/ {self.register_id}'
 
     def __repr__(self):
-        return f'{self.name}/ {self.garages}'
+        return f'{self.name}/ {self.garages}/ {self.register_id}'
 
     def __eq__(self, other):
         return self.hit_hat() == other.hit_hat()
@@ -180,30 +181,27 @@ class Cesar:
         return self.hit_hat() >= other.hit_hat()
 
     def add_garage(self, garage: Garage):
-        if not garage.owner:
-            print(f'This garage is the property of the other collector')
+        if garage.owner:
+            raise ValueError(f'This garage: {garage} is the property of the other collector (id = {garage.owner})')
         else:
             self.garages.append(garage)
             garage.owner = self.register_id
+            for car in garage.cars:
+                car.owner = self.register_id
 
     def most_empty(self):
-        empty_gar = self.garages[0]
-        for i in range(1, len(self.garages)):
-            if self.garages[i].free_places > empty_gar.free_places:
-                empty_gar = self.garages[i]
-        if empty_gar.free_places == 0:
-            return None
-        return empty_gar
+        return min(self.garages, key=lambda garage: garage.free_places)
 
     def add_car(self, car: Car, garage: Garage = None):
         if garage is not None:
             if garage in self.garages:
                 garage.add(car)
             else:
-                print(f'Sorry, {self.name} does not have this garage')
+                pass
+                # print(f'Sorry, {self.name} does not have this garage')
         else:
             if most_empty() == None:
-                print("There are no free places in any garage")
+                pass# print("There are no free places in any garage")
             else:
                 most_empty().add(car)
 
@@ -217,4 +215,28 @@ class Cesar:
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
 
 
+car1 = Car('BMW', 'Coupe', 111, 11)
+car2 = Car('BMW', 'Coupe', 222, 22)
+car3 = Car('BMW', 'Coupe', 333, 33)
+car4 = Car('BMW', 'Coupe', 444, 44)
+car5 = Car('BMW', 'Coupe', 555, 55)
+car6 = Car('BMW', 'Coupe', 666, 66)
+car7 = Car('BMW', 'Coupe', 777, 77)
+
+gar1 = Garage('London', 10, [car1, car2])
+gar2 = Garage('London', 10, [car3, car4])
+gar3 = Garage('London', 10, [car5, car6, car7])
+# print(gar1)
+# print(gar2)
+cesar1 = Cesar('One', [gar2])
+cesar2 = Cesar('Two', [gar3])
+# ADDDDD CAAARRRr
+
+# print(gar1)
+
+print(cesar1)
+print(cesar2)
+
+# print(gar1)
+# print(cesar1)
 
