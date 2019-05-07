@@ -23,6 +23,9 @@ from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TO
 from uuid import uuid4
 import json
 import pickle
+from ruamel.yaml import YAML
+
+yaml = YAML()
 
 
 class Car:
@@ -122,6 +125,22 @@ class Car:
         with open(pickle_file, 'rb') as file:
             return pickle.load(file)
 
+    def yaml_serialise_to_string(self):
+        return yaml.dumps(self)
+
+    def yaml_serialize_to_file(self, file_name):
+        with open(file_name, 'w') as file:
+            yaml.dump(self, file)
+
+    @staticmethod
+    def yaml_deserialize_from_string(obj):
+        return yaml.loads(obj)
+
+    @staticmethod
+    def yaml_deserialize_from_file(yaml_file):
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
+
 class Garage:
 
     cars: List[Car]
@@ -218,6 +237,22 @@ class Garage:
     def pickle_deserialize_from_file(pickle_file):
         with open(pickle_file, 'rb') as file:
             return pickle.load(file)
+
+    def yaml_serialise_to_string(self):
+        return yaml.dumps(self)
+
+    def yaml_serialize_to_file(self, file_name):
+        with open(file_name, 'w') as file:
+            yaml.dump(self, file)
+
+    @staticmethod
+    def yaml_deserialize_from_string(obj):
+        return yaml.loads(obj)
+
+    @staticmethod
+    def yaml_deserialize_from_file(yaml_file):
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
 
 
 class Cesar:
@@ -345,7 +380,21 @@ class Cesar:
         with open(pickle_file, 'rb') as file:
             return pickle.load(file)
 
+    def yaml_serialise_to_string(self):
+        return yaml.dumps(self)
 
+    def yaml_serialize_to_file(self, file_name):
+        with open(file_name, 'w') as file:
+            yaml.dump(self, file)
+
+    @staticmethod
+    def yaml_deserialize_from_string(obj):
+        return yaml.loads(obj)
+
+    @staticmethod
+    def yaml_deserialize_from_file(yaml_file):
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
 
 
 
@@ -362,14 +411,22 @@ car2 = Car('Chery', 'Sedan', 22, 22)
 car3 = Car('Bugatti', 'Coupe', 33, 33)
 car4 = Car('Dodge', 'Coupe', 44, 44)
 
+
 gar1 = Garage('London', 5, [car1, car2])
 gar2 = Garage('Kiev', 10, [car3, car4])
 
 cesar = Cesar('David', [gar1, gar2])
 
+print(car1)
+ser = car1.yaml_serialise_to_string()
+print(ser)
+des = Car.yaml_deserialize_from_string(ser)
+print(des)
+
+
 # print(cesar)
 # print('\n', '~'*150)
-# ser_cesar = cesar.json_serialize_to_string()
+# ser_cesar = cesar.yaml_serialize_to_string()
 # des_cesar_from_str = Cesar.json_deserialize_from_string(ser_cesar)
 # print(des_cesar_from_str)
 # print('\n', '~'*150)
