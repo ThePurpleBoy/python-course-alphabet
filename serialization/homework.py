@@ -17,15 +17,15 @@ Advanced
 Добавити опрацьовку формату ini
 
 """
-
+from ruamel.yaml import YAML
 from typing import List
 from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TOWNS
 from uuid import uuid4
 import json
 import pickle
-from ruamel.yaml import YAML
 
-yaml = YAML()
+
+
 
 
 class Car:
@@ -126,20 +126,24 @@ class Car:
             return pickle.load(file)
 
     def yaml_serialise_to_string(self):
+        yaml = YAML()
         return yaml.dumps(self)
 
     def yaml_serialize_to_file(self, file_name):
+        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
     def yaml_deserialize_from_string(obj):
+        yaml = YAML()
         return yaml.loads(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
+        yaml = YAML()
         with open(yaml_file, 'r') as file:
-            return yaml.load(file)
+            return yaml.load(yaml_file)
 
 class Garage:
 
@@ -239,18 +243,22 @@ class Garage:
             return pickle.load(file)
 
     def yaml_serialise_to_string(self):
+        yaml = YAML()
         return yaml.dumps(self)
 
     def yaml_serialize_to_file(self, file_name):
+        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
     def yaml_deserialize_from_string(obj):
+        yaml = YAML()
         return yaml.loads(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
+        yaml = YAML()
         with open(yaml_file, 'r') as file:
             return yaml.load(file)
 
@@ -381,18 +389,22 @@ class Cesar:
             return pickle.load(file)
 
     def yaml_serialise_to_string(self):
+        yaml = YAML()
         return yaml.dumps(self)
 
     def yaml_serialize_to_file(self, file_name):
+        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
     def yaml_deserialize_from_string(obj):
+        yaml = YAML()
         return yaml.loads(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
+        yaml = YAML()
         with open(yaml_file, 'r') as file:
             return yaml.load(file)
 
