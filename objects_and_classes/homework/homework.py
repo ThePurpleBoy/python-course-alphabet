@@ -42,15 +42,19 @@ from uuid import uuid4
 class Car:
 
     def __init__(self, producer, car_type, price: float, mileage: float):
-        if producer not in CARS_PRODUCER or car_type not in CARS_TYPES:
-            print("Please, enter valid values <producer> and <type>")
-        else:
-            self.producer = producer
-            self.car_type = car_type
-            self.price = float(price)
-            self.mileage = float(mileage)
-            self.number = uuid4().hex
-            self.usability = True
+        if producer not in CARS_PRODUCER:
+            raise ValueError(f'Producer: <{producer}> is not available. Select a producer from the following list {CARS_PRODUCER}')
+        if car_type not in CARS_TYPES:
+            raise ValueError(f'Car_type: <{car_type}> is not available. Select a car_type from the following list {CARS_TYPES}')
+
+        self.producer = producer
+        self.car_type = car_type
+        self.price = float(price)
+        self.mileage = float(mileage)
+        self.number = uuid4().hex
+        self.available = True
+        self.garage = None
+        self.cesar = None
 
     def __eq__(self, other):
         return self.price == other.price
@@ -80,6 +84,8 @@ class Car:
         self.number = uuid4().hex
 
 
+car = Car('Ford', 'Sedan', 111, 11)
+print(car)
 
 
 
@@ -89,31 +95,36 @@ class Garage:
 
     def __init__(self, town, places: int, cars=None, owner=None):
         if town not in TOWNS:
-            print("Please, enter valid values <town>")
+            raise ValueError(f'Town: <{town}> is not available. Select a town from the following list {TOWNS}')
+        if places <= 0:
+            raise ValueError(f'Places should be a positive number')
+        if cars is None:
+            self.cars = []
         else:
-            self.town = town
-            self.cars = cars if cars is not None else []
-            self.places = places
-            self.owner = owner
-            self.free_places = self.places - len(self.cars)
-            if cars is not None:
-                self.cars = []
-                for car in cars:
-                    if car not in self.cars:
-                        self.cars.append(car)
-                        car.usability = False
+            self.cars = cars
+            for car in cars:
+                if not car.available:
+                    raise ValueError(f'Car: {car} not available')
+                car.garage = self
+                car.available = False
+
+        self.town = town
+        self.places = places
+        self.owner = owner
+        self.free_places = self.places - len(self.cars)
+        self.available = True
 
     def __str__(self):
         return f"{self.town}, {self.places}, {self.cars}, {self.owner}"
 
     def __repr__(self):
-        return f"< {self.town}, {self.places}, {self.cars} >"
+        return f"< {self.town}, {self.places}, {self.cars}, {self.owner} >"
 
     def add(self, car: Car):
         if self.free_places == 0:
             print("Sorry, no room for a new car")
-        elif not car.usability:
-            print("This car is already in use")
+        elif not car.available:
+            print(f"This car {} is part of another garage")
         else:
             self.cars.append(car)
             car.usability = False
