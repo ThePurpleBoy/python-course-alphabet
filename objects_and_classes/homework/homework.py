@@ -190,20 +190,19 @@ class Cesar:
                 car.owner = self.register_id
 
     def most_empty(self):
-        return min(self.garages, key=lambda garage: garage.free_places)
+        return max(self.garages, key=lambda garage: garage.free_places)
 
     def add_car(self, car: Car, garage: Garage = None):
-        if garage is not None:
-            if garage in self.garages:
-                garage.add(car)
-            else:
-                pass
-                # print(f'Sorry, {self.name} does not have this garage')
+        if not car.available:
+            raise ValueError('This machine is already in use')
+        elif garage is None:
+            self.most_empty().add(car)
+        elif garage not in self.garages:
+            raise ValueError(f'This garage: {garage} is the property of the other collector (id = {garage.owner})')
+        elif garage.free_places == 0:
+            raise ValueError('There are no free places in the specified garage')
         else:
-            if most_empty() == None:
-                pass# print("There are no free places in any garage")
-            else:
-                most_empty().add(car)
+            garage.add(car)
 
     def garages_count(self):
         return len(self.garages)
@@ -215,28 +214,4 @@ class Cesar:
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
 
 
-car1 = Car('BMW', 'Coupe', 111, 11)
-car2 = Car('BMW', 'Coupe', 222, 22)
-car3 = Car('BMW', 'Coupe', 333, 33)
-car4 = Car('BMW', 'Coupe', 444, 44)
-car5 = Car('BMW', 'Coupe', 555, 55)
-car6 = Car('BMW', 'Coupe', 666, 66)
-car7 = Car('BMW', 'Coupe', 777, 77)
-
-gar1 = Garage('London', 10, [car1, car2])
-gar2 = Garage('London', 10, [car3, car4])
-gar3 = Garage('London', 10, [car5, car6, car7])
-# print(gar1)
-# print(gar2)
-cesar1 = Cesar('One', [gar2])
-cesar2 = Cesar('Two', [gar3])
-# ADDDDD CAAARRRr
-
-# print(gar1)
-
-print(cesar1)
-print(cesar2)
-
-# print(gar1)
-# print(cesar1)
 
