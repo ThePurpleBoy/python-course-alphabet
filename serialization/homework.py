@@ -17,13 +17,14 @@ Advanced
 Добавити опрацьовку формату ini
 
 """
-from ruamel.yaml import YAML
+
 from typing import List
 from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TOWNS
 from uuid import uuid4
 import json
 import pickle
-
+from ruamel.yaml import YAML
+from ruamel.yaml.compat import StringIO
 
 
 
@@ -31,15 +32,18 @@ import pickle
 class Car:
 
     def __init__(self, producer, car_type, price: float, mileage: float):
-        if producer not in CARS_PRODUCER or car_type not in CARS_TYPES:
-            print("Please, enter valid values <producer> and <type>")
-        else:
-            self.producer = producer
-            self.car_type = car_type
-            self.price = float(price)
-            self.mileage = float(mileage)
-            self.number = uuid4().hex
-            self.usability = True
+        if producer not in CARS_PRODUCER:
+            raise ValueError(f'Producer: <{producer}> is not available. Select a producer from the following list {CARS_PRODUCER}')
+        if car_type not in CARS_TYPES:
+            raise ValueError(f'Car_type: <{car_type}> is not available. Select a car_type from the following list {CARS_TYPES}')
+
+        self.producer = producer
+        self.car_type = car_type
+        self.price = float(price)
+        self.mileage = float(mileage)
+        self.number = uuid4().hex
+        self.available = True
+        self.owner = None
 
     def __eq__(self, other):
         return self.price == other.price
@@ -63,7 +67,7 @@ class Car:
         return f"{self.producer} - {self.car_type}, Price:{self.price}, Mileage:{self.mileage}, Number:{self.number}"
 
     def __repr__(self):
-        return f"< {self.producer} / {self.car_type} / {self.price} / {self.mileage} / {self.number} >"
+        return f"Producer: {self.producer}, Car_type: {self.car_type}, Price: {self.price}, Mileage: {self.mileage}, Number: {self.number}"
 
     def replace_number(self):
         self.number = uuid4().hex
@@ -75,9 +79,9 @@ class Car:
                 "price": obj.price,
                 "mileage": obj.mileage,
                 "number": obj.number,
-                "usability": obj.usability}
+                "available": obj.available,
+                "owner": obj.owner}
         return data
-
 
     @classmethod
     def json_hook(cls, data):  # decoder
@@ -90,7 +94,8 @@ class Car:
                   price=price,
                   mileage=mileage)
         car.number = data.get('number')
-        car.usability = data.get('usability')
+        car.available = data.get('available')
+        car.owner = data.get('owner')
         return car
 
     def json_serialize_to_string(self):
@@ -127,7 +132,8 @@ class Car:
 
     def yaml_serialise_to_string(self):
         yaml = YAML()
-        return yaml.dumps(self)
+        yaml.register_class(Car)
+        return yaml.dump(self, stream=StringIO())
 
     def yaml_serialize_to_file(self, file_name):
         yaml = YAML()
@@ -137,52 +143,64 @@ class Car:
     @staticmethod
     def yaml_deserialize_from_string(obj):
         yaml = YAML()
-        return yaml.loads(obj)
+        return yaml.load(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
         yaml = YAML()
         with open(yaml_file, 'r') as file:
-            return yaml.load(yaml_file)
+            return yaml.load(file)
+
 
 class Garage:
 
     cars: List[Car]
 
-    def __init__(self, town, places: int, cars=None, owner=None):
+    def __init__(self, town, places: int, cars=None):
         if town not in TOWNS:
-            print("Please, enter valid values <town>")
+            raise ValueError(f'Town: <{town}> is not available. Select a town from the following list {TOWNS}')
+        if places <= 0:
+            raise ValueError(f'Places should be a positive number')
+        if cars and len(cars) > places:
+            raise ValueError(f'There is not enough space for all cars in the garage. Free places = {places}, Cars = {len(cars)}')
+        if cars is None:
+            self.cars = []
         else:
-            self.town = town
-            self.cars = cars if cars is not None else []
-            self.places = places
-            self.owner = owner
-            self.free_places = self.places - len(self.cars)
-            if cars is not None:
-                self.cars = []
-                for car in cars:
-                    if car not in self.cars:
-                        self.cars.append(car)
-                        car.usability = False
+            for car in cars:
+                if not car.available:
+                    raise ValueError(f'Car: {car} not available')
+                car.available = False
+            self.cars = cars
+
+        self.town = town
+        self.places = places
+        self.owner = None
+        self.free_places = self.places - len(self.cars)
+        self.available = True
 
     def __str__(self):
         return f"{self.town}, {self.places}, {self.cars}, {self.owner}"
 
     def __repr__(self):
-        return f"< {self.town}, {self.places}, {self.cars} >"
+        return f"Town: {self.town}, Places: {self.places}, Cars: {self.cars}, Owner: {self.owner} >"
 
     def add(self, car: Car):
         if self.free_places == 0:
-            print("Sorry, no room for a new car")
-        elif not car.usability:
-            print("This car is already in use")
+            raise ValueError("Sorry, no room for a new car")
+        elif not car.available:
+            raise ValueError(f"This car {car} is part of another garage")
         else:
             self.cars.append(car)
-            car.usability = False
+            car.available = False
+            car.owner = self.owner
 
     def remove(self, car: Car):
-        self.cars.remove(car)
-        car.usability = True
+        if car not in self.cars:
+            raise ValueError(f"The car: {car} is not in this garage")
+        else:
+            self.cars.remove(car)
+            car.available = True
+            car.owner = None
 
     def hit_hat(self):
         return sum(map(lambda car: car.price, self.cars))
@@ -194,20 +212,21 @@ class Garage:
                 'places': obj.places,
                 'cars': cars,
                 'owner': obj.owner,
-                'free_places': obj.free_places}
+                'free_places': obj.free_places,
+                'available': obj.available}
         return data
 
     @classmethod
     def json_hook(cls, data):  # decoder
         town = data['town']
         places = data['places']
-        owner = data['owner']
         cars = json.loads(data['cars'], object_hook=Car.json_hook)
         garage = Garage(town=town,
                         places=places,
-                        cars=cars,
-                        owner=owner)
+                        cars=cars)
         garage.free_places = data.get('free_places')
+        garage.owner = data.get('owner')
+        garage.available = data.get('available')
         return garage
 
     def json_serialize_to_string(self):
@@ -244,7 +263,8 @@ class Garage:
 
     def yaml_serialise_to_string(self):
         yaml = YAML()
-        return yaml.dumps(self)
+        yaml.register_class(Garage)
+        return yaml.dump(self, stream=StringIO())
 
     def yaml_serialize_to_file(self, file_name):
         yaml = YAML()
@@ -254,7 +274,7 @@ class Garage:
     @staticmethod
     def yaml_deserialize_from_string(obj):
         yaml = YAML()
-        return yaml.loads(obj)
+        return yaml.load(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
@@ -270,19 +290,23 @@ class Cesar:
     def __init__(self, name: str, garages=None):
         self.name = name
         self.register_id = uuid4().hex
-        self.garages = garages if garages is not None else []
-        if garages is not None:
+        if garages is None:
             self.garages = []
+        else:
             for garage in garages:
-                if garage not in self.garages:
-                    self.garages.append(garage)
-                    garage.owner = self.register_id
+                if garage.owner is not None:
+                    raise ValueError(f'This garage: {garage} is the property of another collector (id = {garage.owner})')
+                garage.owner = self.register_id
+                for car in garage.cars:
+                    car.owner = self.register_id
+                    car.available = False
+            self.garages = garages
 
     def __str__(self):
-        return f'{self.name}: {self.garages}'
+        return f'{self.name}: {self.garages}/ {self.register_id}'
 
     def __repr__(self):
-        return f'{self.name}/ {self.garages}'
+        return f'Name: {self.name}, Garages: {self.garages}, Register_id: {self.register_id}'
 
     def __eq__(self, other):
         return self.hit_hat() == other.hit_hat()
@@ -303,32 +327,28 @@ class Cesar:
         return self.hit_hat() >= other.hit_hat()
 
     def add_garage(self, garage: Garage):
-        if not garage.owner:
-            print(f'This garage is the property of the other collector')
+        if garage.owner:
+            raise ValueError(f'This garage: {garage} is the property of the other collector (id = {garage.owner})')
         else:
             self.garages.append(garage)
             garage.owner = self.register_id
+            for car in garage.cars:
+                car.owner = self.register_id
 
     def most_empty(self):
-        empty_gar = self.garages[0]
-        for i in range(1, len(self.garages)):
-            if self.garages[i].free_places > empty_gar.free_places:
-                empty_gar = self.garages[i]
-        if empty_gar.free_places == 0:
-            return None
-        return empty_gar
+        return max(self.garages, key=lambda garage: garage.free_places)
 
     def add_car(self, car: Car, garage: Garage = None):
-        if garage is not None:
-            if garage in self.garages:
-                garage.add(car)
-            else:
-                print(f'Sorry, {self.name} does not have this garage')
+        if not car.available:
+            raise ValueError('This machine is already in use')
+        elif garage is None:
+            self.most_empty().add(car)
+        elif garage not in self.garages:
+            raise ValueError(f'This garage: {garage} is the property of the other collector (id = {garage.owner})')
+        elif garage.free_places == 0:
+            raise ValueError('There are no free places in the specified garage')
         else:
-            if most_empty() == None:
-                print("There are no free places in any garage")
-            else:
-                most_empty().add(car)
+            garage.add(car)
 
     def garages_count(self):
         return len(self.garages)
@@ -390,7 +410,8 @@ class Cesar:
 
     def yaml_serialise_to_string(self):
         yaml = YAML()
-        return yaml.dumps(self)
+        yaml.register_class(Cesar)
+        return yaml.dump(self, stream=StringIO())
 
     def yaml_serialize_to_file(self, file_name):
         yaml = YAML()
@@ -400,7 +421,7 @@ class Cesar:
     @staticmethod
     def yaml_deserialize_from_string(obj):
         yaml = YAML()
-        return yaml.loads(obj)
+        return yaml.load(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
@@ -418,32 +439,4 @@ class Cesar:
 
 
 
-car1 = Car('Ford', 'Sedan', 11, 11)
-car2 = Car('Chery', 'Sedan', 22, 22)
-car3 = Car('Bugatti', 'Coupe', 33, 33)
-car4 = Car('Dodge', 'Coupe', 44, 44)
 
-
-gar1 = Garage('London', 5, [car1, car2])
-gar2 = Garage('Kiev', 10, [car3, car4])
-
-cesar = Cesar('David', [gar1, gar2])
-
-print(car1)
-ser = car1.yaml_serialise_to_string()
-print(ser)
-des = Car.yaml_deserialize_from_string(ser)
-print(des)
-
-
-# print(cesar)
-# print('\n', '~'*150)
-# ser_cesar = cesar.yaml_serialize_to_string()
-# des_cesar_from_str = Cesar.json_deserialize_from_string(ser_cesar)
-# print(des_cesar_from_str)
-# print('\n', '~'*150)
-# Cesar.json_serialize_to_file(cesar, 'test.json')
-# des_cesar_from_file = Cesar.json_deserialize_from_file('test.json')
-# print(des_cesar_from_file)
-# print('\n', '~'*150)
-# print(cesar == des_cesar_from_str == des_cesar_from_file)
