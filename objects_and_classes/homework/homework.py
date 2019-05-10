@@ -93,7 +93,7 @@ class Garage:
             raise ValueError(f'Town: <{town}> is not available. Select a town from the following list {TOWNS}')
         if places <= 0:
             raise ValueError(f'Places should be a positive number')
-        if len(cars) > places:
+        if cars and len(cars) > places:
             raise ValueError(f'There is not enough space for all cars in the garage. Free places = {places}, Cars = {len(cars)}')
         if cars is None:
             self.cars = []
