@@ -17,19 +17,33 @@ Advanced
 Добавити опрацьовку формату ini
 
 """
-
+import sys
 from typing import List
 from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TOWNS
 from uuid import uuid4
 import json
 import pickle
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, yaml_object
 from ruamel.yaml.compat import StringIO
 
 
+class NewYaml(YAML):  # This class would not appear here without Pavlo Zubariev's help !
+    def dump(self, data, stream=None, **kw):
+        inefficient = False
+        if stream is None:
+            inefficient = True
+            stream = StringIO()
+        YAML.dump(self, data, stream, **kw)
+        if inefficient:
+            return stream.getvalue()
 
 
+yaml = NewYaml()
+
+
+@yaml_object(yaml)
 class Car:
+    yaml = NewYaml()
 
     def __init__(self, producer, car_type, price: float, mileage: float):
         if producer not in CARS_PRODUCER:
@@ -131,29 +145,25 @@ class Car:
             return pickle.load(file)
 
     def yaml_serialise_to_string(self):
-        yaml = YAML()
-        yaml.register_class(Car)
-        return yaml.dump(self, stream=StringIO())
+        return yaml.dump(self)
 
     def yaml_serialize_to_file(self, file_name):
-        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
     def yaml_deserialize_from_string(obj):
-        yaml = YAML()
         return yaml.load(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
-        yaml = YAML()
         with open(yaml_file, 'r') as file:
             return yaml.load(file)
 
 
+@yaml_object(yaml)
 class Garage:
-
+    yaml = NewYaml()
     cars: List[Car]
 
     def __init__(self, town, places: int, cars=None):
@@ -262,29 +272,25 @@ class Garage:
             return pickle.load(file)
 
     def yaml_serialise_to_string(self):
-        yaml = YAML()
-        yaml.register_class(Garage)
-        return yaml.dump(self, stream=StringIO())
+        return yaml.dump(self)
 
     def yaml_serialize_to_file(self, file_name):
-        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
     def yaml_deserialize_from_string(obj):
-        yaml = YAML()
         return yaml.load(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
-        yaml = YAML()
         with open(yaml_file, 'r') as file:
             return yaml.load(file)
 
 
+@yaml_object(yaml)
 class Cesar:
-
+    yaml = NewYaml()
     garages = List[Garage]
 
     def __init__(self, name: str, garages=None):
@@ -409,32 +415,20 @@ class Cesar:
             return pickle.load(file)
 
     def yaml_serialise_to_string(self):
-        yaml = YAML()
-        yaml.register_class(Cesar)
-        return yaml.dump(self, stream=StringIO())
+        return yaml.dump(self)
 
     def yaml_serialize_to_file(self, file_name):
-        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
     def yaml_deserialize_from_string(obj):
-        yaml = YAML()
         return yaml.load(obj)
 
     @staticmethod
     def yaml_deserialize_from_file(yaml_file):
-        yaml = YAML()
         with open(yaml_file, 'r') as file:
             return yaml.load(file)
-
-
-
-
-
-
-
 
 
 
