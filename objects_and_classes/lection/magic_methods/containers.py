@@ -1,7 +1,8 @@
 import random
 from typing import List
 
-from magic_methods.lifetime import Programmer
+
+from lection.magic_methods.lifetime import Programmer
 
 
 class ITCompany:
@@ -36,7 +37,8 @@ if __name__ == "__main__":
     positions = ["trainee", "junior", "middle", "senior", "tech lead"]
 
     programmers = []
-    for _ in range(2):
+
+    for _ in range(5):
         programmer = Programmer(
             name=random.choice(names),
             language=random.choice(languages),
@@ -46,15 +48,4 @@ if __name__ == "__main__":
 
     company = ITCompany(name="Ralabs", members=programmers, years=6)
 
-    # Lets see what we have in our company now
-    for p in company:
-        print(p)
-
-    # We should find this programmer in our company
-    programmer = random.choice(programmers)
-    print(f"Do we have this programmer {programmer} in company {company}? -{programmer in company}")
-
-    # And this not
-    batman = Programmer(name="Batman", position=["Team Lead"], language="Fists")
-    print(f"Do we have this programmer {batman} in company {company}? -{batman in company}")
-
+    

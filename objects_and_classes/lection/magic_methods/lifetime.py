@@ -1,12 +1,8 @@
 import time
 
-from utils import describe_object
-
+from lection.utils import describe_object
 
 class Programmer:
-
-    def __init__(self, name, language="Python", position="Junior"):
-        print("Fill out programmer with attributes")
         self.name = name
         self.language = language
         self.position = position
@@ -20,6 +16,7 @@ class Programmer:
         Returns:
             instance of class
         """
+
         print("We create new object that will be map as programmer")
         obj = super(Programmer, cls).__new__(cls)
         return obj
@@ -31,6 +28,8 @@ class Programmer:
     def __exit__(self, exc_type, exc_val, exc_tb):
         print("Bring back coffee from this animal")
         self.enough_coffee = False
+
+
 
     # def __del__(self):
     #     print(f"Programmer go to sleep")
@@ -59,19 +58,23 @@ class Programmer:
         return f"Programmer(name='{self.name}')"
 
 
+
 if __name__ == "__main__":
     # Create instance of Programmer
     programmer = Programmer(name="Anton")
+
 
     # Lets look what it have
     print(describe_object("programmer", programmer))
 
     # Lets see how it is converted to string
+
     print(f"{programmer}")
     print(programmer)
 
     # Lets see repr
     res = repr(programmer)
     print(res)
+
     recover_programmer = eval(res)
     print(programmer.position)

@@ -1,5 +1,8 @@
 # OBJECT and CLASSES
 
+
+# Talk about tests and homework 
+
 - Python is an object oriented programming language.
 
 - Almost everything in Python is an object, with its properties and methods.
@@ -42,4 +45,8 @@
     
 ### Useful inks
  - list of magic methods https://www.tutorialsteacher.com/python/magic-methods-in-python
- - 
+
+  
+### Classmethod and static method (bonus)
+
+
