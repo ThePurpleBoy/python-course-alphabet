@@ -56,7 +56,6 @@ class Car:
         self.price = float(price)
         self.mileage = float(mileage)
         self.number = uuid4().hex
-        self.available = True
         self.owner = None
 
     def __eq__(self, other):
@@ -93,7 +92,6 @@ class Car:
                 "price": obj.price,
                 "mileage": obj.mileage,
                 "number": obj.number,
-                "available": obj.available,
                 "owner": obj.owner}
         return data
 
@@ -108,7 +106,6 @@ class Car:
                   price=price,
                   mileage=mileage)
         car.number = data.get('number')
-        car.available = data.get('available')
         car.owner = data.get('owner')
         return car
 
@@ -177,16 +174,15 @@ class Garage:
             self.cars = []
         else:
             for car in cars:
-                if not car.available:
+                if car.garage:
                     raise ValueError(f'Car: {car} not available')
-                car.available = False
+                car.garage = self
             self.cars = cars
 
         self.town = town
         self.places = places
         self.owner = None
         self.free_places = self.places - len(self.cars)
-        self.available = True
 
     def __str__(self):
         return f"{self.town}, {self.places}, {self.cars}, {self.owner}"
@@ -197,20 +193,18 @@ class Garage:
     def add(self, car: Car):
         if self.free_places == 0:
             raise ValueError("Sorry, no room for a new car")
-        elif not car.available:
+        elif car.garage:
             raise ValueError(f"This car {car} is part of another garage")
         else:
             self.cars.append(car)
-            car.available = False
-            car.owner = self.owner
+            car.garage = self
 
     def remove(self, car: Car):
         if car not in self.cars:
-            raise ValueError(f"The car: {car} is not in this garage")
+            raise ValueError(f"This car: {car} is not in this garage")
         else:
             self.cars.remove(car)
-            car.available = True
-            car.owner = None
+            car.garage = None
 
     def hit_hat(self):
         return sum(map(lambda car: car.price, self.cars))
@@ -222,8 +216,7 @@ class Garage:
                 'places': obj.places,
                 'cars': cars,
                 'owner': obj.owner,
-                'free_places': obj.free_places,
-                'available': obj.available}
+                'free_places': obj.free_places}
         return data
 
     @classmethod
@@ -236,7 +229,6 @@ class Garage:
                         cars=cars)
         garage.free_places = data.get('free_places')
         garage.owner = data.get('owner')
-        garage.available = data.get('available')
         return garage
 
     def json_serialize_to_string(self):
@@ -305,7 +297,7 @@ class Cesar:
                 garage.owner = self.register_id
                 for car in garage.cars:
                     car.owner = self.register_id
-                    car.available = False
+                    car.garage = garage
             self.garages = garages
 
     def __str__(self):
@@ -345,7 +337,7 @@ class Cesar:
         return max(self.garages, key=lambda garage: garage.free_places)
 
     def add_car(self, car: Car, garage: Garage = None):
-        if not car.available:
+        if car.garage:
             raise ValueError('This machine is already in use')
         elif garage is None:
             self.most_empty().add(car)
