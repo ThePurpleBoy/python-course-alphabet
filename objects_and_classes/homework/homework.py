@@ -52,7 +52,6 @@ class Car:
         self.price = float(price)
         self.mileage = float(mileage)
         self.number = uuid4().hex
-        self.available = True
         self.garage = None
         self.owner = None
 
@@ -99,17 +98,15 @@ class Garage:
             self.cars = []
         else:
             for car in cars:
-                if not car.available:
+                if car.garage:
                     raise ValueError(f'Car: {car} not available')
                 car.garage = self
-                car.available = False
             self.cars = cars
 
         self.town = town
         self.places = places
         self.owner = None
         self.free_places = self.places - len(self.cars)
-        self.available = True
 
     def __str__(self):
         return f"{self.town}, {self.places}, {self.cars}, {self.owner}"
@@ -120,18 +117,18 @@ class Garage:
     def add(self, car: Car):
         if self.free_places == 0:
             raise ValueError("Sorry, no room for a new car")
-        elif not car.available:
+        elif car.garage:
             raise ValueError(f"This car {car} is part of another garage")
         else:
             self.cars.append(car)
-            car.available = False
+            car.garage = self
 
     def remove(self, car: Car):
         if car not in self.cars:
-            raise ValueError(f"The car: {car} is not in this garage")
+            raise ValueError(f"This car: {car} is not in this garage")
         else:
             self.cars.remove(car)
-            car.available = True
+            car.garage = None
 
     def hit_hat(self):
         return sum(map(lambda car: car.price, self.cars))
@@ -153,7 +150,7 @@ class Cesar:
                 garage.owner = self.register_id
                 for car in garage.cars:
                     car.owner = self.register_id
-                    car.available = False
+                    car.garage = garage
             self.garages = garages
 
     def __str__(self):
@@ -193,7 +190,7 @@ class Cesar:
         return max(self.garages, key=lambda garage: garage.free_places)
 
     def add_car(self, car: Car, garage: Garage = None):
-        if not car.available:
+        if car.garage:
             raise ValueError('This machine is already in use')
         elif garage is None:
             self.most_empty().add(car)
