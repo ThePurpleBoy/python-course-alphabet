@@ -156,14 +156,19 @@ class Wall:
     def wall_square(self):
         return self.width * self.height
 
+
     def number_of_rolls_of_wallpaper(self, roll_width_m, roll_length_m):
         for parameter in [roll_width_m, roll_length_m]:
             if not isinstance(parameter, (int, float)) or parameter <= 0:
                 raise ValueError('Roll parameters should be positive numbers')
-        roll_lines = math.floor(roll_length_m / self.height)
-        wall_lines = math.ceil(self.width / roll_width_m)
-        count_rolls = math.ceil(wall_lines / roll_lines)
-        return count_rolls
+        try:
+            roll_lines = math.floor(roll_length_m / self.height)
+            wall_lines = math.ceil(self.width / roll_width_m)
+            count_rolls = math.ceil(wall_lines / roll_lines)
+            return count_rolls
+        except ZeroDivisionError:
+            print("Select other wallpapers, because selected wallpapers are too short for effective use")
+
 
 class Roof:
     """
@@ -219,7 +224,7 @@ class Door:
 
      * Implement method door_square which return result of simple square formula of rectangle
 
-     * Implement method door_square which receives material value as a parameter
+     * Implement method door_price which receives material value as a parameter
        if material eq wood return door_square multiplied on wood_price
        if material eq metal return door_square multiplied on metal_price
        if material value is another one (not metal or wood) raise ValueError "Sorry we don't have such material"
@@ -230,20 +235,31 @@ class Door:
 
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, width, heidht):
+        for parameter in [width, height]:
+            if not isinstance(parameter, (int, float)) or parameter <= 0:
+                raise ValueError('Door parameters should be positive numbers')
+        self.width = width
+        self.height = heidht
+        self.wood_price = 10
+        self.metal_price = 3
 
     def door_square(self):
-        pass
+        return self.width * self.height
 
-    def door_price(self):
-        pass
+    def door_price(self, material):
+        if material == 'wood':
+            return self.door_square() * self.wood_price
+        elif material == 'metal':
+            return self.door_square() * self.metal_price
+        else:
+            raise ValueError("Sorry we don't have such material")
 
-    def update_wood_price(self):
-        pass
+    def update_wood_price(self, new_price):
+        self.wood_price = new_price
 
-    def update_metal_price(self):
-        pass
+    def update_metal_price(self, new_price):
+        self.metal_price = new_price
 
 
 class House:
@@ -305,52 +321,81 @@ class House:
     """
 
     def __init__(self):
-        pass
+        self.__walls = []
+        self.__windows = []
+        self.__roof = None
+        self.__door = None
 
-    def create_wall(self):
-        pass
+    def create_wall(self, width, height):
+        for parameter in [width, height]:
+            if not isinstance(parameter, (int, float)) or parameter <= 0:
+                raise ValueError('Value must be not 0')
+        if len(self.__walls) == 4:
+            raise ValueError("Our house can not have more than 4 walls")
+        self.__walls.append(Wall(width, height))
 
-    def create_roof(self):
-        pass
+    def create_roof(self, width, height, roof_type):
+        for parameter in [width, height]:
+            if not isinstance(parameter, (int, float)) or parameter <= 0:
+                raise ValueError('Value must be not 0')
+        if self.__roof:
+            raise ValueError("The house can not have two roofs")
+        self.__roof = Roof(width, height, roof_type)
 
-    def create_window(self):
-        pass
+    def create_window(self, width, height):
+        for parameter in [width, height]:
+            if not isinstance(parameter, (int, float)) or parameter <= 0:
+                raise ValueError('Value must be not 0')
+        self.__windows.append(Window(width, height))
 
-    def create_door(self):
-        pass
+    def create_door(self, width, height):
+        for parameter in [width, height]:
+            if not isinstance(parameter, (int, float)) or parameter <= 0:
+                raise ValueError('Value must be not 0')
+        if self.__door:
+            raise ValueError("The house can not have two doors")
+        self.__door = Door(width, height)
 
     def get_count_of_walls(self):
-        pass
+        return len(self.__walls)
 
     def get_count_of_windows(self):
-        pass
+        return len(self.__windows)
 
-    def get_door_price(self):
-        pass
+    def get_door_price(self, material):
+        return self.__door.door_price(material)
 
-    def update_wood_price(self):
-        pass
+    def update_wood_price(self, new_wood_price):
+        self.__door.update_wood_price(new_wood_price)
 
-    def update_metal_price(self):
-        pass
+    def update_metal_price(self, new_metal_price):
+        self.__door.update_metal_price(new_metal_price)
 
     def get_roof_square(self):
-        pass
+        return self.__roof.roof_square
 
     def get_walls_square(self):
-        pass
+        return sum(map(lambda wall: wall.wall_square(), self.__walls))
 
     def get_windows_square(self):
-        pass
+        return sum(map(lambda window: window.window.square(), self.__windows))
 
     def get_door_square(self):
-        pass
+        return self.__door.door_square
 
-    def get_number_of_rolls_of_wallpapers(self):
-        pass
+    def get_number_of_rolls_of_wallpapers(self, roll_width_m, roll_length_m):
+        try:
+            for parameter in [roll_width_m, roll_length_m]:
+                if not isinstance(parameter, (int, float)) or parameter <= 0:
+                    raise ValueError('Sorry length must be not 0')
+            return sum(map(lambda wall: wall.number_of_rolls_of_wallpaper(roll_width_m, roll_length_m), self.__walls))
+        except ZeroDivisionError:
+            print("Select other wallpapers, because selected wallpapers are too small for effective use")
+        except TypeError:
+            print("The length of the wallpaper should be greater than the maximum height of the walls")
 
     def get_room_square(self):
-        pass
+        return self.get_walls_square() - self.get_windows_square() - self.get_door_square()
 
 
 
