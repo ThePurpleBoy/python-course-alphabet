@@ -49,15 +49,11 @@ class Cat:
         self.average_speed = self._set_average_speed()
 
     def eat(self, product):
-        food = ['fodder', 'apple', 'milk']
-        if product not in food:
-            print(f'This picking cat will not eat {product}. To feed it, select one from the list: {food}')
-        if product == 'fodder':
-            self._increase_saturation_level(10)
-        elif product == 'apple':
-            self._increase_saturation_level(5)
-        elif product == 'milk':
-            self._increase_saturation_level(2)
+        food = {'fodder': 10, 'apple': 5, 'milk': 2}
+        try:
+            self._increase_saturation_level(food[product])
+        except KeyError:
+            print(f'This picking cat will not eat {product}. To feed it, select one from the list: {food.keys()}')
 
     def _reduce_saturation_level(self, value):
         self.saturation_level -= value
@@ -115,13 +111,11 @@ class Cheetah(Cat):
 
     """
     def eat(self, product):
-        food = ['gazelle', 'rabbit']
-        if product not in food:
-            print(f'This picking cheetah will not eat {product}. To feed it, select one from the list: {food}')
-        if product == 'gazelle':
-            self._increase_saturation_level(30)
-        elif product == 'rabbit':
-            self._increase_saturation_level(15)
+        food = {'gazelle': 30, 'rabbit': 15}
+        try:
+            self._increase_saturation_level(food[product])
+        except KeyError:
+            print(f'This picking cheetah will not eat {product}. To feed it, select one from the list: {food.keys()}')
 
     def _set_average_speed(self):
         if self.age <= 5:
