@@ -110,7 +110,7 @@ class Cheetah(Cat):
 
     * Redefine method _set_average_speed
       if age less or eq 5 return 90
-      if age between 5 and 15(including) return 90
+      if age between 5 and 15(including) return 75
       if age grosser 15(not including) return 40
 
     """
@@ -163,8 +163,8 @@ class Wall:
                 raise ValueError('Roll parameters should be positive numbers')
         try:
             roll_lines = math.floor(roll_length_m / self.height)
-            wall_lines = math.ceil(self.width / roll_width_m)
-            count_rolls = math.ceil(wall_lines / roll_lines)
+            wall_lines = math.floor(self.width / roll_width_m)
+            count_rolls = wall_lines / roll_lines
             return count_rolls
         except ZeroDivisionError:
             print("Select other wallpapers, because selected wallpapers are too short for effective use")
@@ -384,15 +384,10 @@ class House:
         return self.__door.door_square()
 
     def get_number_of_rolls_of_wallpapers(self, roll_width_m, roll_length_m):
-        try:
-            for parameter in [roll_width_m, roll_length_m]:
-                if not isinstance(parameter, (int, float)) or parameter <= 0:
-                    raise ValueError('Sorry length must be not 0')
-            return sum(map(lambda wall: wall.number_of_rolls_of_wallpaper(roll_width_m, roll_length_m), self.__walls))
-        except ZeroDivisionError:
-            print("Select other wallpapers, because selected wallpapers are too small for effective use")
-        except TypeError:
-            print("The length of the wallpaper should be greater than the maximum height of the walls")
+        for parameter in [roll_width_m, roll_length_m]:
+            if not isinstance(parameter, (int, float)) or parameter <= 0:
+                raise ValueError('Sorry length must be not 0')
+        return sum(map(lambda wall: wall.number_of_rolls_of_wallpaper(roll_width_m, roll_length_m), self.__walls))
 
     def get_room_square(self):
         return self.get_walls_square() - self.get_windows_square() - self.get_door_square()
@@ -400,11 +395,4 @@ class House:
 
 
 
-wall1 = Wall(10, 2.5)
-wall2 = Wall(10, 2.5)
-wall3 = Wall(14, 2.5)
-wall4 = Wall(14, 2.5)
-print(wall1.number_of_rolls_of_wallpaper(0.53, 10))
-print(wall2.number_of_rolls_of_wallpaper(0.53, 10))
-print(wall3.number_of_rolls_of_wallpaper(0.53, 10))
-print(wall4.number_of_rolls_of_wallpaper(0.53, 10))
+
