@@ -1,5 +1,6 @@
 import math
 
+
 class Cat:
     """
     Write Class Cat which will receive age from user
@@ -50,7 +51,7 @@ class Cat:
     def eat(self, product):
         food = ['fodder', 'apple', 'milk']
         if product not in food:
-            raise ValueError(f'This picking cat will not eat {product}. To feed it, select one from the list: {food}')
+            print(f'This picking cat will not eat {product}. To feed it, select one from the list: {food}')
         if product == 'fodder':
             self._increase_saturation_level(10)
         elif product == 'apple':
@@ -116,7 +117,7 @@ class Cheetah(Cat):
     def eat(self, product):
         food = ['gazelle', 'rabbit']
         if product not in food:
-            raise ValueError(f'This picking cheetah will not eat {product}. To feed it, select one from the list: {food}')
+            print(f'This picking cheetah will not eat {product}. To feed it, select one from the list: {food}')
         if product == 'gazelle':
             self._increase_saturation_level(30)
         elif product == 'rabbit':
@@ -156,7 +157,6 @@ class Wall:
     def wall_square(self):
         return self.width * self.height
 
-
     def number_of_rolls_of_wallpaper(self, roll_width_m, roll_length_m):
         for parameter in [roll_width_m, roll_length_m]:
             if not isinstance(parameter, (int, float)) or parameter <= 0:
@@ -190,9 +190,9 @@ class Roof:
         self.roof_type = roof_type
 
     def roof_square(self):
-        if self.roof_type is 'gable':
+        if self.roof_type == "gable":
             return 2 * self.width * self.height
-        elif self.roof_type is 'single-pitch':
+        elif self.roof_type == "single-pitch":
             return self.width * self.height
         else:
             raise ValueError('Sorry there is only two types of roofs')
@@ -235,12 +235,12 @@ class Door:
 
     """
 
-    def __init__(self, width, heidht):
+    def __init__(self, width, height):
         for parameter in [width, height]:
             if not isinstance(parameter, (int, float)) or parameter <= 0:
                 raise ValueError('Door parameters should be positive numbers')
         self.width = width
-        self.height = heidht
+        self.height = height
         self.wood_price = 10
         self.metal_price = 3
 
@@ -372,16 +372,16 @@ class House:
         self.__door.update_metal_price(new_metal_price)
 
     def get_roof_square(self):
-        return self.__roof.roof_square
+        return self.__roof.roof_square()
 
     def get_walls_square(self):
         return sum(map(lambda wall: wall.wall_square(), self.__walls))
 
     def get_windows_square(self):
-        return sum(map(lambda window: window.window.square(), self.__windows))
+        return sum(map(lambda window: window.window_square(), self.__windows))
 
     def get_door_square(self):
-        return self.__door.door_square
+        return self.__door.door_square()
 
     def get_number_of_rolls_of_wallpapers(self, roll_width_m, roll_length_m):
         try:
@@ -400,3 +400,11 @@ class House:
 
 
 
+wall1 = Wall(10, 2.5)
+wall2 = Wall(10, 2.5)
+wall3 = Wall(14, 2.5)
+wall4 = Wall(14, 2.5)
+print(wall1.number_of_rolls_of_wallpaper(0.53, 10))
+print(wall2.number_of_rolls_of_wallpaper(0.53, 10))
+print(wall3.number_of_rolls_of_wallpaper(0.53, 10))
+print(wall4.number_of_rolls_of_wallpaper(0.53, 10))
