@@ -242,12 +242,11 @@ class Door:
         return self.width * self.height
 
     def door_price(self, material):
-        if material == 'wood':
-            return self.door_square() * self.wood_price
-        elif material == 'metal':
-            return self.door_square() * self.metal_price
-        else:
-            raise ValueError("Sorry we don't have such material")
+        materials_types = {'wood': self.wood_price, 'metal': self.metal_price}
+        try:
+            return self.door_square() * materials_types[material]
+        except KeyError:
+             print("Sorry we don't have such material")
 
     def update_wood_price(self, new_price):
         self.wood_price = new_price
