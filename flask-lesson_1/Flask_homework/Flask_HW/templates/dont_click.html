@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href={{ url_for('static', filename='dont_click_style2.css') }} />
+{% endblock %}
+{% block title %} Error {% endblock %}
+{% block content %}
+    <h1 ><a href="/"> Main </a></h1>
+    <h2 id="dont_click"> Якщо ти попав сюди через свою цікавість, клікнувши по кнопці на MAIN PAGE,
+        то через цікавість та непослушність твоя мишка проживе на один клік менше.
+        Служба по захисту тварин уже виїхала за тобою. Воно тобі треба було?!
+    </h2>
+    <h2 id="redirect"> А ще сюди тебе могло перенаправити, якщо ти вказав адресу <127.0.0.1:5000/redirect>.
+        Зверни увагу, що "redirect" дійсно спрацював, адже адреса змінилась на <127.0.0.1:5000/dont_click>
+    </h2>
+{% endblock %}

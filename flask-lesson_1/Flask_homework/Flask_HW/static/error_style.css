@@ -1,0 +1,22 @@
+h1 {
+    padding: 1.5%;
+    width:97%;
+    background: red;
+    text-align: center;
+    color: black;
+    font-size: 250%;
+    display: block;
+    text-decoration: none;
+    }
+
+
+
+h2 {
+    width:100%;
+    background: black;
+    text-align: center;
+    color: whitesmoke;
+    font-size: 250%;
+    display: block;
+    text-decoration: none;
+    }

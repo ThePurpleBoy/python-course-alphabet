@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href={{ url_for('static', filename='vegetables_style2.css') }} />
+{% endblock %}
+{% block title %} Vegetables {% endblock %}
+{% block content %}
+    <h1><a href="/"> Main </a></h1>
+    <h2> Fruits </h2>
+    <ul id="fruit">
+        {% for n in list_vegetables %}
+        <li>{{n}}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

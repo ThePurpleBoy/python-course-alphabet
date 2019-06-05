@@ -1,0 +1,35 @@
+
+
+
+h1 a {
+    margin-left: 30%;
+    padding: 1.5%;
+    width:40%;
+    background: black;
+    text-align: center;
+    color: whitesmoke;
+    font-size: 75%;
+    display: block;
+    text-decoration: none;
+    }
+
+h1 a:hover {
+    background: lightgrey;
+    color: black;
+    }
+
+h2 {
+    width:100%;
+    text-align: center;
+    color: black;
+    font-size: 200%;
+    display: block;
+    text-decoration: none;
+    }
+
+#fruit  {
+    margin-left: 35%;
+    text-align: left;
+    color: black;
+    font-size: 125%;
+    }

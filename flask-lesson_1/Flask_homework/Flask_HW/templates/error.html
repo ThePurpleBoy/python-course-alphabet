@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href={{ url_for('static', filename='errorstyle.css') }} />
+{% endblock %}
+{% block title %} Error {% endblock %}
+{% block content %}
+    <h1> This is ERROR ! </h1>
+    <h2> It looks like you went to a non-existent page, please review the comments with the instructions.
+</h2>
+{% endblock %}
