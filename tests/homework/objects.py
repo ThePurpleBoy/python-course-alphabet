@@ -50,7 +50,7 @@ class Car:
         self.car_type = car_type
         self.price = float(price)
         self.mileage = float(mileage)
-        self.number = uuid4()
+        self.number = uuid4().hex
         self.garage = None
         self.owner = None
 
@@ -139,7 +139,7 @@ class Cesar:
 
     def __init__(self, name: str, garages=None):
         self.name = name
-        self.register_id = uuid4()
+        self.register_id = uuid4().hex
         if garages is None:
             self.garages = []
         else:
@@ -209,6 +209,3 @@ class Cesar:
     def hit_hat(self):
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
 
-if __name__ == "__main__":
-    car1= Car("Ford", "Sedan", 111, 11)
-    print(car1)
