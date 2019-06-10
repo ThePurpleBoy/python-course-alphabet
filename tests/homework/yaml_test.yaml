@@ -1,0 +1,6 @@
+!Garage
+cars: []
+town: London
+places: 10
+owner:
+free_places: 10

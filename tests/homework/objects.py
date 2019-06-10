@@ -1,50 +1,39 @@
-"""
-Вам небхідно написати 3 класи. Колекціонери Гаражі та Автомобілі.
-Звязок наступний один колекціонер може мати багато гаражів.
-В одному гаражі може знаходитися багато автомобілів.
-Автомобіль має наступні характеристики:
-    price - значення типу float. Всі ціни за дефолтом в одній валюті.
-    type - одне з перечисленних значеннь з CARS_TYPES в docs.
-    producer - одне з перечисленних значеннь в CARS_PRODUCER.
-    number - значення типу UUID. Присвоюється автоматично при створенні автомобілю.
-    mileage - значення типу float. Пробіг автомобіля в кілометрах.
-    Автомобілі можна порівнювати між собою за ціною.
-    При виводі(logs, print) автомобілю повинні зазначатися всі його атрибути.
-    Автомобіль має метод заміни номеру.
-    номер повинен відповідати UUID
-Гараж має наступні характеристики:
-    town - одне з перечислениз значеннь в TOWNS
-    cars - список з усіх автомобілів які знаходяться в гаражі
-    places - значення типу int. Максимально допустима кількість автомобілів в гаражі
-    owner - значення типу UUID. За дефолтом None.
-    Повинен мати реалізованими наступні методи
-    add(car) -> Добавляє машину в гараж, якщо є вільні місця
-    remove(cat) -> Забирає машину з гаражу.
-    hit_hat() -> Вертає сумарну вартість всіх машин в гаражі
-Колекціонер має наступні характеристики
-    name - значення типу str. Його ім'я
-    garages - список з усіх гаражів які належать цьому Колекціонеру. Кількість гаражів за замовчуванням - 0
-    register_id - UUID; Унікальна айдішка Колекціонера.
-    Повинні бути реалізовані наступні методи:
-    hit_hat() - повертає ціну всіх його автомобілів.
-    garages_count() - вертає кількість гаражів.
-    сars_count() - вертає кількість машин.
-    add_car() - додає машину у вибраний гараж. Якщо гараж не вказаний, то додає в гараж, де найбільше вільних місць.
-    Якщо вільних місць немає повинне вивести повідомлення про це.
-    Колекціонерів можна порівнювати за ціною всіх їх автомобілів.
-"""
+
+import sys
 from typing import List
 from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TOWNS
 from uuid import uuid4
+import json
+import pickle
+from ruamel.yaml import YAML, yaml_object
+from ruamel.yaml.compat import StringIO
 
 
+class NewYaml(YAML):
+    def dump(self, data, stream=None, **kw):
+        inefficient = False
+        if stream is None:
+            inefficient = True
+            stream = StringIO()
+        YAML.dump(self, data, stream, **kw)
+        if inefficient:
+            return stream.getvalue()
+
+
+yaml = NewYaml()
+
+
+@yaml_object(yaml)
 class Car:
+    yaml = NewYaml()
 
     def __init__(self, producer, car_type, price: float, mileage: float):
         if producer not in CARS_PRODUCER:
-            raise ValueError(f'Producer: <{producer}> is not available. Select a producer from the following list {CARS_PRODUCER}')
+            raise ValueError(f'Producer: <{producer}> is not available. '
+                             f'Select a producer from the following list {CARS_PRODUCER}')
         if car_type not in CARS_TYPES:
-            raise ValueError(f'Car_type: <{car_type}> is not available. Select a car_type from the following list {CARS_TYPES}')
+            raise ValueError(f'Car_type: <{car_type}> is not available. '
+                             f'Select a car_type from the following list {CARS_TYPES}')
 
         self.producer = producer
         self.car_type = car_type
@@ -81,9 +70,82 @@ class Car:
     def replace_number(self):
         self.number = uuid4()
 
+    @staticmethod
+    def json_default(obj):  # encoder
+        data = {"producer": obj.producer,
+                "car_type": obj.car_type,
+                "price": obj.price,
+                "mileage": obj.mileage,
+                "number": obj.number,
+                "owner": obj.owner}
+        return data
 
+    @classmethod
+    def json_hook(cls, data):  # decoder
+        producer = data['producer']
+        car_type = data['car_type']
+        price = data['price']
+        mileage = data['mileage']
+        car = Car(producer=producer,
+                  car_type=car_type,
+                  price=price,
+                  mileage=mileage)
+        car.number = data.get('number')
+        car.owner = data.get('owner')
+        return car
+
+    def json_serialize_to_string(self):
+        return json.dumps(self, default=Car.json_default, indent=4)
+
+    def json_serialize_to_file(self, json_file):
+        with open(json_file, 'w') as file:
+            json.dump(self, file, default=Car.json_default, indent=4)
+
+    @staticmethod
+    def json_deserialize_from_string(obj):
+        return json.loads(obj, object_hook=Car.json_hook)
+
+    @staticmethod
+    def json_deserialize_from_file(json_file):
+        with open(json_file, 'r') as file:
+            return json.load(file, object_hook=Car.json_hook)
+
+    def pickle_serialize_to_string(self):
+        return pickle.dumps(self)
+
+    def pickle_serialize_to_file(self, file_name):
+        with open(file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def pickle_deserialize_from_string(obj):
+        return pickle.loads(obj)
+
+    @staticmethod
+    def pickle_deserialize_from_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+    def yaml_serialize_to_string(self):
+        return yaml.dump(self)
+
+    def yaml_serialize_to_file(self, file_name):
+        with open(file_name, 'w') as file:
+            yaml.dump(self, file)
+
+    @staticmethod
+    def yaml_deserialize_from_string(obj):
+        return yaml.load(obj)
+
+    @staticmethod
+    def yaml_deserialize_from_file(yaml_file):
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
+
+
+@yaml_object(yaml)
 class Garage:
-
+    yaml = NewYaml()
     cars: List[Car]
 
     def __init__(self, town, places: int, cars=None):
@@ -92,8 +154,9 @@ class Garage:
         if places <= 0:
             raise ValueError(f'Places should be a positive number')
         if cars and len(cars) > places:
-            raise ValueError(f'There is not enough space for all cars in the garage. Free places = {places}, Cars = {len(cars)}')
-        if cars is None:
+            raise ValueError(f'There is not enough space for all cars in the garage. '
+                             f'Free places = {places}, Cars = {len(cars)}')
+        elif cars is None:
             self.cars = []
         else:
             for car in cars:
@@ -132,9 +195,80 @@ class Garage:
     def hit_hat(self):
         return sum(map(lambda car: car.price, self.cars))
 
+    @staticmethod
+    def json_default(obj):  # encoder
+        cars = json.dumps(obj.cars, default=Car.json_default)
+        data = {'town': obj.town,
+                'places': obj.places,
+                'cars': cars,
+                'owner': obj.owner,
+                'free_places': obj.free_places}
+        return data
 
+    @classmethod
+    def json_hook(cls, data):  # decoder
+        town = data['town']
+        places = data['places']
+        cars = json.loads(data['cars'], object_hook=Car.json_hook)
+        garage = Garage(town=town,
+                        places=places,
+                        cars=cars)
+        garage.free_places = data.get('free_places')
+        garage.owner = data.get('owner')
+        return garage
+
+    def json_serialize_to_string(self):
+        return json.dumps(self, default=Garage.json_default, indent=4)
+
+    def json_serialize_to_file(self, json_file):
+        with open(json_file, 'w') as file:
+            json.dump(self, file, default=Garage.json_default, indent=4)
+
+    @staticmethod
+    def json_deserialize_from_string(obj):
+        return json.loads(obj, object_hook=Garage.json_hook)
+
+    @staticmethod
+    def json_deserialize_from_file(json_file):
+        with open(json_file, 'r') as file:
+            return json.load(file, object_hook=Garage.json_hook)
+
+    def pickle_serialize_to_string(self):
+        return pickle.dumps(self)
+
+    def pickle_serialize_to_file(self, file_name):
+        with open(file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def pickle_deserialize_from_string(obj):
+        return pickle.loads(obj)
+
+    @staticmethod
+    def pickle_deserialize_from_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+    def yaml_serialize_to_string(self):
+        return yaml.dump(self)
+
+    def yaml_serialize_to_file(self, file_name):
+        with open(file_name, 'w') as file:
+            yaml.dump(self, file)
+
+    @staticmethod
+    def yaml_deserialize_from_string(obj):
+        return yaml.load(obj)
+
+    @staticmethod
+    def yaml_deserialize_from_file(yaml_file):
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
+
+
+@yaml_object(yaml)
 class Cesar:
-
+    yaml = NewYaml()
     garages = List[Garage]
 
     def __init__(self, name: str, garages=None):
@@ -145,7 +279,8 @@ class Cesar:
         else:
             for garage in garages:
                 if garage.owner is not None:
-                    raise ValueError(f'This garage: {garage} is the property of another collector (id = {garage.owner})')
+                    raise ValueError(f'This garage: {garage} is the property of another collector '
+                                     f'(id = {garage.owner})')
                 garage.owner = self.register_id
                 for car in garage.cars:
                     car.owner = self.register_id
@@ -209,12 +344,70 @@ class Cesar:
     def hit_hat(self):
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
 
+    @staticmethod
+    def json_default(obj):  # encoder
+        garages = json.dumps(obj.garages, default=Garage.json_default)
+        data = {'name': obj.name,
+                'garages': garages,
+                'register_id': obj.register_id}
+        return data
 
-# if __name__ == "__main__":
-#     car1 = Car("Ford", "Sedan", 10, 1)
-#     car2 = Car("Ford", "Sedan", 20, 2)
-#     garage1 = Garage("London", 5, [car1])
-#     garage2 = Garage("London", 10, [car2])
-#     cesar = Cesar("Yulii", [garage1, garage2])
-#
-#     print(repr(cesar))
+    @classmethod
+    def json_hook(cls, data):  # decoder
+        name = data['name']
+        garages = json.loads(data['garages'], object_hook=Garage.json_hook)
+        cesar = Cesar(name=name,
+                      garages=garages)
+        cesar.register_id = data.get('register_id')
+        return cesar
+
+    def json_serialize_to_string(self):
+        return json.dumps(self, default=Cesar.json_default, indent=4)
+
+    def json_serialize_to_file(self, json_file):
+        with open(json_file, 'w') as file:
+            json.dump(self, file, default=Cesar.json_default, indent=4)
+
+    @staticmethod
+    def json_deserialize_from_string(obj):
+        return json.loads(obj, object_hook=Cesar.json_hook)
+
+    @staticmethod
+    def json_deserialize_from_file(json_file):
+        with open(json_file, 'r') as file:
+            return json.load(file, object_hook=Cesar.json_hook)
+
+    def pickle_serialize_to_string(self):
+        return pickle.dumps(self)
+
+    def pickle_serialize_to_file(self, file_name):
+        with open(file_name, "wb") as file:
+            pickle.dump(self, file)
+
+    @staticmethod
+    def pickle_deserialize_from_string(obj):
+        return pickle.loads(obj)
+
+    @staticmethod
+    def pickle_deserialize_from_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+    def yaml_serialize_to_string(self):
+        return yaml.dump(self)
+
+    def yaml_serialize_to_file(self, file_name):
+        with open(file_name, 'w') as file:
+            yaml.dump(self, file)
+
+    @staticmethod
+    def yaml_deserialize_from_string(obj):
+        return yaml.load(obj)
+
+    @staticmethod
+    def yaml_deserialize_from_file(yaml_file):
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
+
+
+
