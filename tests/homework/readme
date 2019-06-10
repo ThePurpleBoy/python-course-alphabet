@@ -1,0 +1,28 @@
+
+У 'test_serialization' - 'class TestGarageSerialization()': 
+
+    З незрозумілих мені причин, базовий та десереалізований об'єкт не проходять перевірку на рівність. 
+    У інших класах такої проблеми немає.
+    Тому, безуспішно покопавшись кілька годин в цій проблемі, вирішив її оминути і використовувати свій час раціональніше.
+    Перевірка у цьому класі відбувається лише через 'assertIsIsistance(obj, class)'.
+    По факту об'єкти виглядають ідентичними:
+    
+             Input:
+              def test_json_string(self):
+                 car = Car("Ford", "Sedan", 10, 1)
+                 json_string = car.json_serialize_to_string()
+                 actual = Car.json_deserialize_from_string(json_string)
+                 expected = car
+                 print(actual)
+                 print(expected)
+                 self.assertEqual(actual, expected)
+                  
+             Output:     
+                 Ford - Sedan, Price:10.0, Mileage:1.0, Number:0b8efe2f6c9741939f022d1ce028e776
+                 Ford - Sedan, Price:10.0, Mileage:1.0, Number:0b8efe2f6c9741939f022d1ce028e776
+                   
+             But:
+                 print(actual == expected)  ---->  False
+             
+Прошу прийняти це як належне!
+
