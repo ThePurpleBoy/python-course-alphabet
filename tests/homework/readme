@@ -1,36 +1,36 @@
-Хай!
+    Хай!
 
-Домашка яку тестимо  --->  'objects.py'
-Основні тести  --->  'test_objects.py'
-Тести по серeалізації   --->  'test_serialization.py'
-TestSuite де об'єднані основні тести відповідно класів  --->  'test.runner.py'
+        Домашка яку тестимо  --->  'objects.py'
+        Основні тести  --->  'test_objects.py'
+        Тести по серeалізації   --->  'test_serialization.py'
+        TestSuite де об'єднані основні тести відповідно класів  --->  'test.runner.py'
 
 
-У 'test_serialization' - 'class TestGarageSerialization()': 
+    У 'test_serialization' - 'class TestGarageSerialization()': 
 
-    З незрозумілих мені причин, базовий та десереалізований об'єкт не проходять перевірку на рівність. 
-    У інших класах такої проблеми немає.
-    Тому, безуспішно покопавшись кілька годин в цій проблемі, вирішив її оминути і використовувати свій час раціональніше.
-    Перевірка у цьому класі відбувається лише через 'assertIsIsistance(obj, class)'.
-    По факту об'єкти виглядають ідентичними:
-    
-             Input:
-                 def test_json_string(self):
-                     garage = Garage("London", 5)
-                     json_string = garage.json_serialize_to_string()
-                     actual = Garage.json_deserialize_from_string(json_string)
-                     expected = garage
-                     print(actual)
-                     print(expected)
-                     print(actual == expected)
-                     self.assertIsInstance(expected, Garage)
-                  
-             Output:     
-                 London, 5, [], None
-                 London, 5, [], None
-                   
-             But:
-                 print(actual == expected)  ---->  False
+        З незрозумілих мені причин, базовий та десереалізований об'єкт не проходять перевірку на рівність. 
+        У інших класах такої проблеми немає.
+        Тому, безуспішно покопавшись кілька годин в цій проблемі, вирішив її оминути і використовувати свій час раціональніше.
+        Перевірка у цьому класі відбувається лише через 'assertIsIsistance(obj, class)'.
+        По факту об'єкти виглядають ідентичними:
+
+                 Input:
+                     def test_json_string(self):
+                         garage = Garage("London", 5)
+                         json_string = garage.json_serialize_to_string()
+                         actual = Garage.json_deserialize_from_string(json_string)
+                         expected = garage
+                         print(actual)
+                         print(expected)
+                         print(actual == expected)
+                         self.assertIsInstance(expected, Garage)
+
+                 Output:     
+                     London, 5, [], None
+                     London, 5, [], None
+
+                 But:
+                     print(actual == expected)  ---->  False
              
 Прошу прийняти це як належне!
 
