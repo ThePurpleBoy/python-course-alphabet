@@ -209,3 +209,12 @@ class Cesar:
     def hit_hat(self):
         return sum(map(lambda garage: garage.hit_hat(), self.garages))
 
+
+# if __name__ == "__main__":
+#     car1 = Car("Ford", "Sedan", 10, 1)
+#     car2 = Car("Ford", "Sedan", 20, 2)
+#     garage1 = Garage("London", 5, [car1])
+#     garage2 = Garage("London", 10, [car2])
+#     cesar = Cesar("Yulii", [garage1, garage2])
+#
+#     print(repr(cesar))
