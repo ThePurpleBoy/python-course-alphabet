@@ -2,7 +2,7 @@
 
 Домашка яку тестимо  --->  'objects.py'
 Основні тести  --->  'test_objects.py'
-Тести по сериалізації   --->  'test_serialization.py'
+Тести по серeалізації   --->  'test_serialization.py'
 TestSuite де об'єднані основні тести відповідно класів  --->  'test.runner.py'
 
 
