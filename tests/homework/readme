@@ -1,3 +1,10 @@
+Хай!
+
+Домашка яку тестимо  --->  'object.py'
+Основні тести  --->  'test_objects.py'
+Тести по сериалізації   --->  'test_serialization.py'
+TestSuite де об'єднані основні тести відповідно класів  --->  'test.runner.py'
+
 
 У 'test_serialization' - 'class TestGarageSerialization()': 
 
