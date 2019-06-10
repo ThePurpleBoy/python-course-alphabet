@@ -8,18 +8,19 @@
     По факту об'єкти виглядають ідентичними:
     
              Input:
-              def test_json_string(self):
-                 car = Car("Ford", "Sedan", 10, 1)
-                 json_string = car.json_serialize_to_string()
-                 actual = Car.json_deserialize_from_string(json_string)
-                 expected = car
-                 print(actual)
-                 print(expected)
-                 self.assertEqual(actual, expected)
+                 def test_json_string(self):
+                     garage = Garage("London", 5)
+                     json_string = garage.json_serialize_to_string()
+                     actual = Garage.json_deserialize_from_string(json_string)
+                     expected = garage
+                     print(actual)
+                     print(expected)
+                     print(actual == expected)
+                     self.assertIsInstance(expected, Garage)
                   
              Output:     
-                 Ford - Sedan, Price:10.0, Mileage:1.0, Number:0b8efe2f6c9741939f022d1ce028e776
-                 Ford - Sedan, Price:10.0, Mileage:1.0, Number:0b8efe2f6c9741939f022d1ce028e776
+                 London, 5, [], None
+                 London, 5, [], None
                    
              But:
                  print(actual == expected)  ---->  False
