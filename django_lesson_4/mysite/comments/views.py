@@ -10,11 +10,10 @@ class CommentCreateView(CreateView):
     model = Comment
     template_name = 'comments/add_comment.html'
     form_class = CommentForm
-    # success_url = '/'
 
     def form_valid(self, form):
         comment = form.save(commit=False)
-        comment.comment = form.cleaned_data.get('comment'),
+        comment.comment = form.cleaned_data.get('comment')
         author = self.request.user.username
         comment.author = author
         article_id = self.kwargs['article_id']
@@ -32,4 +31,7 @@ class CommentCreateView(CreateView):
         article_id = self.kwargs['article_id']
         return reverse('detail', args=(article_id,))
 
-
+    def get_form_kwargs(self):
+        kwargs = super(CommentCreateView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs

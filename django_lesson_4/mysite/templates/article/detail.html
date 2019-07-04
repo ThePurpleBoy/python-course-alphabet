@@ -23,3 +23,12 @@
 
 <a href="{% url 'update' article.id %}">Update</a>
 <a href="{% url 'delete' article.id %}">Delete</a>
+
+<h2> Comments </h2>
+    {% for comment in comments %}
+    <li> {{ comment }} PUB_DATE {{ comment.pub_date }} </li>
+    {% endfor %}
+
+<a href="{% url 'add_comment' article.id %}">Add Comment</a>
+
+

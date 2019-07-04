@@ -4,6 +4,8 @@ from .models import Article
 from .forms import ArticleForm
 from account.models import Profile
 from .mixins import FormMessageMixin
+from comments.models import Comment
+
 
 class IndexView(ListView):
     model = Article
@@ -39,6 +41,13 @@ class ArticleDetailView(DetailView):
     template_name = 'article/detail.html'
     context_object_name = 'article'
     pk_url_kwarg = 'article_id'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ArticleDetailView, self).get_context_data()
+        article_id = self.kwargs['article_id']
+        article = Article.objects.get(pk=article_id)
+        context['comments'] = Comment.objects.filter(article=article)
+        return context
 
 
 class ArticleUpdateView(FormMessageMixin, UpdateView):

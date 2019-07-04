@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from article.views import IndexView, ArticleCreateView, ArticleDetailView, ArticleUpdateView, ArticleDeleteView
 from account.views import ProfileDetailView, SignUp
+from comments.views import CommentCreateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +33,8 @@ urlpatterns = [
     path('account/profile/<int:profile_id>', ProfileDetailView.as_view(), name='profile'),
     path('account/', include('django.contrib.auth.urls')),
     path('signup/', SignUp.as_view(), name='signup'),
-    path('ckeditor/', include('ckeditor_uploader.urls'))
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    # Comments
+    path('article/add_comment/<int:article_id>', CommentCreateView.as_view(), name='add_comment'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
