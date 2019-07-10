@@ -1,9 +1,10 @@
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic.list import MultipleObjectMixin
 from django.urls import reverse
+from .mixins import FormMessageMixin
 from .models import Article
 from .forms import ArticleForm
 from account.models import Profile
-from .mixins import FormMessageMixin
 from comments.models import Comment
 
 
@@ -36,17 +37,18 @@ class ArticleCreateView(FormMessageMixin, CreateView):
         return reverse('detail', args=(self.object.id,))
 
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(DetailView, MultipleObjectMixin):
     model = Article
     template_name = 'article/detail.html'
     context_object_name = 'article'
     pk_url_kwarg = 'article_id'
+    paginate_by = 3
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(ArticleDetailView, self).get_context_data()
         article_id = self.kwargs['article_id']
         article = Article.objects.get(pk=article_id)
-        context['comments'] = Comment.objects.filter(article=article)
+        object_list = Comment.objects.filter(article=article)
+        context = super(ArticleDetailView, self).get_context_data(object_list=object_list, **kwargs)
         return context
 
 

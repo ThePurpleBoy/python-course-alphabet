@@ -141,6 +141,7 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 
+
 # # Email Settings
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.mailgun.org'

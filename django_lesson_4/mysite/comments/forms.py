@@ -10,9 +10,10 @@ class CommentForm(forms.ModelForm):
         labels = {
             'author': 'Who are you?',
         }
-        # widgets = {
-        #
-        # }
+        widgets = {
+            'parent_id': forms.HiddenInput(),
+            'article': forms.HiddenInput(),
+        }
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -20,10 +21,11 @@ class CommentForm(forms.ModelForm):
         if self.request.user.is_authenticated:
             self.fields['author'].required = False
             self.fields['article'].required = False
+            self.fields['parent_id'].required = False
             self.fields['author'].widget = forms.HiddenInput()
-            self.fields['article'].widget = forms.HiddenInput()
         else:
             self.fields['author'].required = True
             self.fields['article'].required = False
-            self.fields['article'].widget = forms.HiddenInput()
+            self.fields['parent_id'].required = False
+
 

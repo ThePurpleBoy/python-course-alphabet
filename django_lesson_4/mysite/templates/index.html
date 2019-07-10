@@ -1,3 +1,5 @@
+{% load article_tags %}
+
 {% if user.is_authenticated %}
     Hi {{ user.username }}
     {% comment %}
@@ -10,11 +12,10 @@
     <a href="{% url 'signup' %}">Sign Up</a>
 {% endif %}
 
-
 <h1>{{ page_title }}</h1>
 {% for article in articles %}
     <a href="{% url 'detail' article.id %}">{{ article.title }}</a>
     <br>
-    {{ article.description }}
+    {{ article.description|safe}}
     <hr>
 {% endfor %}
