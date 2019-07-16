@@ -1,0 +1,7 @@
+{% if user.is_authenticated %}
+    <form action="{% url 'profile_update' profile.id %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+    </form>
+{% endif %}

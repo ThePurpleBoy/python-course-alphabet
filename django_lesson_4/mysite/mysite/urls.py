@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from article.views import IndexView, ArticleCreateView, ArticleDetailView, ArticleUpdateView, ArticleDeleteView
-from account.views import ProfileDetailView, SignUp
+from account.views import ProfileDetailView, SignUp, ProfileUpdateView
 from comments.views import CommentCreateView, CommentToCommentView
 
 urlpatterns = [
@@ -34,6 +34,7 @@ urlpatterns = [
     path('account/', include('django.contrib.auth.urls')),
     path('signup/', SignUp.as_view(), name='signup'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('account/profile/<int:profile_id>/update/', ProfileUpdateView.as_view(), name='profile_update'),
     # Comments
     path('article/<int:article_id>/add_comment', CommentCreateView.as_view(), name='add_comment'),
     path('article/<int:article_id>/reply_to_comment/<int:comment_id>', CommentToCommentView.as_view(), name='reply_to_comment'),

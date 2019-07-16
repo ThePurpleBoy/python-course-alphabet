@@ -1,11 +1,10 @@
 {% load article_tags %}
 
 {% if user.is_authenticated %}
-    Hi {{ user.username }}
-    {% comment %}
-        <a href="{% url 'profile' %}">Profile</a>
-    {% endcomment %}
+Hi {{ user.username }}
+    <a href="{% url 'profile' user.profile.id %}">Profile</a>
     <a href="{% url 'logout' %}">Logout</a>
+    <p><a href="{% url 'create' %}">Create new article</a></p>
 {% else %}
     You're not logged in
     <a href="{% url 'login' %}">Login</a>

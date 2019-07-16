@@ -1,3 +1,4 @@
-{{ profile.user.username }}
-{{ profile.bio }}
-{{ profile.location }}
+<h1>Name: {{ profile.user.username }}</h1>
+<h2>Bio: {{ profile.bio }}</h2>
+<h3>Location: {{ profile.location }}</h3>
+<a href="{% url 'profile_update' profile.id %}">Update</a>

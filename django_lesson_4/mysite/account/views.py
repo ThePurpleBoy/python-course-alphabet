@@ -1,9 +1,11 @@
 from django.contrib.auth import login, authenticate
+from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
-from django.views.generic import DetailView, CreateView
+from django.views.generic import DetailView, CreateView, UpdateView
 from .models import Profile
+from .forms import ProfileForm
 
 
 class ProfileDetailView(DetailView):
@@ -30,3 +32,24 @@ class SignUp(CreateView):
         )
         login(self.request, authenticated_user)
         return redirect('profile', profile.id)
+
+
+class ProfileUpdateView(UpdateView):
+    model = Profile
+    template_name = "account/profile_update.html"
+    form_class = ProfileForm
+    pk_url_kwarg = 'profile_id'
+
+    def post(self, request, *args, **kwargs):
+        profile = self.get_object()
+        profile.user.username = request.POST['user']
+        profile.user.save()
+        profile.bio = request.POST['bio']
+        profile.location = request.POST['location']
+        profile.save()
+        return HttpResponseRedirect(reverse('profile', args=(profile.id,)))
+
+    def get_form_kwargs(self):
+        kwargs = super(ProfileUpdateView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
