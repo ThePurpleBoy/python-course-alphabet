@@ -1,3 +1,5 @@
+Discus та звичайні коментарі реалізовані разом. (http://127.0.0.1:8000/article/<int:article_id>)
+
 Some useful commands
 
 
